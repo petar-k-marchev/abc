@@ -1,0 +1,34 @@
+
+Abc Contextual properties (AbcProperty)
+
+templates - data-template, control-template, just-template
+
+touch
+
+accessibility
+
+transformations
+
+measure-arrange strategy
+	a visual remembers the last measure arguments and whenever smth that 
+	may affect	its desired size changes then a re-measure pass is scheduled
+	and the same measure arguments are used. if the desired size has not changed
+	then measure-invalidation is not raised. this should be optional because
+	a container may have measured it several times with different args in order
+	to fit it somewhere, the container may have some complex strategy.
+
+ui-pass, touch events, dispatcher
+	start
+	should dispatched things get executed here?
+	touch events are raised
+	dispatched things (from touch events, like scheduled measures) are executed here
+	root is arranged (propagation down to its visuals - measure and arrange pass)
+	end
+
+
+measure and arrange pass
+	invalidate measure ?
+	ok .... so what happens when during measure something says - invalidate measure
+	is that legal?
+	same question for during arrange
+	invalidate layout ? wtf is this
