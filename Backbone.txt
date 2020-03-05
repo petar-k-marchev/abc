@@ -32,3 +32,10 @@ measure and arrange pass
 	is that legal?
 	same question for during arrange
 	invalidate layout ? wtf is this
+
+visual tree
+	how do you make the visual tree so that
+	wpf can have a vis tree per control (because wpf control is a visual, hence its own visual tree)
+	skia can share visual tree accross controls (put a gauge and chart inside 
+	an abc grid, the abc grid can be the visual tree for both controls, hence save performance/memory)
+
