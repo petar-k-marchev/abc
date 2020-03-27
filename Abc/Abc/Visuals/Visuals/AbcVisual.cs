@@ -1,60 +1,50 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 
 namespace Abc.Visuals
 {
     internal abstract class AbcVisual
     {
-        private static int givenBagKeyValues;
-        private static Dictionary<object, AbcBagKey> objectIdentifierToBagKey;
-        
-        private Dictionary<AbcBagKey, object> bag;
+        private AbcVisualTree visualTree;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
+        private AbcSize desiredSize;
+        private bool isDesiredSizeValid;
 
-        internal static AbcBagKey GetNextBagKey()
+        internal AbcVisualTree VisualTree
         {
-            int value = Interlocked.Increment(ref givenBagKeyValues);
-            return new AbcBagKey(value);
-        }
-
-        internal static AbcBagKey GetBagKey(object objectIdentifier)
-        {
-            if (objectIdentifierToBagKey == null)
+            get
             {
-                objectIdentifierToBagKey = new Dictionary<object, AbcBagKey>();
-            }
-
-            AbcBagKey bagKey;
-            if (!objectIdentifierToBagKey.TryGetValue(objectIdentifier, out bagKey))
-            {
-                bagKey = GetNextBagKey();
-                objectIdentifierToBagKey[objectIdentifier] = bagKey;
-            }
-
-            return bagKey;
-        }
-
-        internal bool TryGetBagObject(AbcBagKey key, out object bagObject)
-        {
-            if (this.bag != null)
-            {
-                return this.bag.TryGetValue(key, out bagObject);
-            }
-            else
-            {
-                bagObject = null;
-                return false;
+                return this.visualTree;
             }
         }
 
-        internal void SetBagObject(AbcBagKey key, object value)
+        internal AbcSize DesiredSize
         {
-            if (this.bag == null)
+            get
             {
-                this.bag = new Dictionary<AbcBagKey, object>();
+                return this.desiredSize;
             }
+        }
 
-            this.bag[key] = value;
+        protected virtual AbcSize CalculateDesiredSizeOverride(AbcMeasureContext context)
+        {
+            AbcSize size = this.VisualTree.CalculateDesiredSize(context);
+            return size;
+        }
+
+        internal void CalculateDesiredSize(double availableWidth, double availableHeight)
+        {
+            this.CalculateDesiredSize(new AbcSize(availableWidth, availableHeight));
+        }
+
+        internal void CalculateDesiredSize(AbcSize availableSize)
+        {
+            this.CalculateDesiredSize(new AbcMeasureContext(availableSize));
+        }
+
+        internal void CalculateDesiredSize(AbcMeasureContext context)
+        {
+            this.desiredSize = this.CalculateDesiredSizeOverride(context);
+            this.isDesiredSizeValid = true;
         }
 
         internal AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)
@@ -77,6 +67,28 @@ namespace Abc.Visuals
             this.contextualProperties[propertyKey.key] = propertyValue;
 
             // property changed notifications ?
+        }
+
+        internal void AddFlag(AbcVisualFlag flag)
+        {
+            if (flag == AbcVisualFlag.None)
+            {
+                return;
+            }
+
+            if (flag == AbcVisualFlag.AffectsMeasureAndLayout)
+            {
+                if (this.isDesiredSizeValid)
+                {
+                    //this.Send Measure Request
+                    //this.Send Layout Request
+                }
+            }
+
+            if (flag == AbcVisualFlag.AffectsLayout)
+            {
+                //this.Send Measure Request
+            }
         }
     }
 }

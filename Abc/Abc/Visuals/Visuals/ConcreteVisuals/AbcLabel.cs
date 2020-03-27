@@ -1,8 +1,23 @@
 ﻿namespace Abc.Visuals
 {
-    internal class AbcLabel : AbcMeasureableVisual
+    internal class AbcLabel : AbcVisual
     {
-        // do you need a special AbcProperty like the contextual property ?
-        internal string Text;
+        private string text;
+
+        internal string Text
+        {
+            get
+            {
+                return this.text;
+            }
+            set
+            {
+                if (this.text != value)
+                {
+                    this.text = value;
+                    this.AddFlag(AbcVisualFlag.AffectsMeasureAndLayout);
+                }
+            }
+        }
     }
 }
