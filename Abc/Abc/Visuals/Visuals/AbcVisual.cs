@@ -1,13 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using Abc.Primitives;
+using System;
+using System.Collections.Generic;
 
 namespace Abc.Visuals
 {
     internal abstract class AbcVisual
     {
         private AbcVisualTree visualTree;
+        private AbcVisual visualParent;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
-        private AbcSize desiredSize;
-        private bool isDesiredSizeValid;
+        private bool isMeasurePhase;
+        private AbcSize desiredMeasure;
+        private bool isMeasureValid;
+        private bool isLayoutPhase;
+        private AbcRect layoutSlot;
+        private bool isLayoutValid;
 
         internal AbcVisualTree VisualTree
         {
@@ -15,36 +22,129 @@ namespace Abc.Visuals
             {
                 return this.visualTree;
             }
-        }
-
-        internal AbcSize DesiredSize
-        {
-            get
+            set
             {
-                return this.desiredSize;
+                if (this.visualTree == value)
+                {
+                    throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(VisualTree)));
+                }
+
+                AbcVisualTree oldVisualTree = this.visualTree;
+                this.visualTree = value;
+                this.OnVisualTreeChanged(oldVisualTree);
             }
         }
 
-        protected virtual AbcSize CalculateDesiredSizeOverride(AbcMeasureContext context)
+        internal AbcVisual VisualParent
         {
-            AbcSize size = this.VisualTree.CalculateDesiredSize(context);
+            get
+            {
+                return this.visualParent;
+            }
+            set
+            {
+                if (this.visualParent == value)
+                {
+                    throw new Exception(string.Format("Setting the {0} to the same vlaue seems unneeded.", nameof(VisualParent)));
+                }
+
+                if (this.visualParent != null && value != null)
+                {
+                    throw new InvalidOperationException(string.Format("Visual is already attached to a {0}.", nameof(VisualParent)));
+                }
+
+                AbcVisual oldVisualParent = this.visualParent;
+                this.visualParent = value;
+                this.VisualTree = this.visualParent?.VisualTree;
+                this.OnVisualParentChanged(oldVisualParent);
+            }
+        }
+
+        internal AbcSize DesiredMeasure
+        {
+            get
+            {
+                return this.desiredMeasure;
+            }
+        }
+
+        internal AbcRect LayoutSlot
+        {
+            get
+            {
+                return this.layoutSlot;
+            }
+        }
+
+        protected virtual AbcSize MeasureOverride(AbcMeasureContext context)
+        {
+            AbcSize size = this.VisualTree.Measure(this, context);
             return size;
         }
 
-        internal void CalculateDesiredSize(double availableWidth, double availableHeight)
+        protected virtual void LayoutOverride(AbcLayoutContext context)
         {
-            this.CalculateDesiredSize(new AbcSize(availableWidth, availableHeight));
         }
 
-        internal void CalculateDesiredSize(AbcSize availableSize)
+        protected virtual void OnVisualParentChanged(AbcVisual oldVisualParent)
         {
-            this.CalculateDesiredSize(new AbcMeasureContext(availableSize));
         }
 
-        internal void CalculateDesiredSize(AbcMeasureContext context)
+        protected virtual void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
         {
-            this.desiredSize = this.CalculateDesiredSizeOverride(context);
-            this.isDesiredSizeValid = true;
+            this.VisualTree?.AttachToNativeParent(this, null);
+        }
+
+        internal void Measure(double availableWidth, double availableHeight)
+        {
+            this.Measure(new AbcSize(availableWidth, availableHeight));
+        }
+
+        internal void Measure(AbcSize availableSize)
+        {
+            this.Measure(new AbcMeasureContext(availableSize));
+        }
+
+        internal void Measure(AbcMeasureContext context)
+        {
+            if (this.isMeasureValid)
+            {
+                return;
+            }
+
+            this.isMeasurePhase = true;
+            this.desiredMeasure = this.MeasureOverride(context);
+            this.isMeasurePhase = false;
+            this.isMeasureValid = true;
+        }
+
+        internal void Layout(double x, double y, double width, double height)
+        {
+            this.Layout(new AbcRect(x, y, width, height));
+        }
+
+        internal void Layout(AbcRect slot)
+        {
+            this.Layout(new AbcLayoutContext(slot));
+        }
+
+        internal void Layout(AbcLayoutContext context)
+        {
+            if (this.isLayoutValid)
+            {
+                this.isLayoutValid = this.layoutSlot == context.layoutSlot;
+            }
+
+            if (this.isLayoutValid)
+            {
+                return;
+            }
+
+            this.isLayoutPhase = true;
+            this.layoutSlot = context.layoutSlot;
+            this.LayoutOverride(context);
+            this.isLayoutPhase = false;
+            this.isLayoutValid = true;
         }
 
         internal AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)
@@ -71,24 +171,11 @@ namespace Abc.Visuals
 
         internal void AddFlag(AbcVisualFlag flag)
         {
-            if (flag == AbcVisualFlag.None)
+            if (this.isMeasureValid)
             {
-                return;
+                bool affectsMeasure = flag == AbcVisualFlag.AffectsMeasureOnly || flag == AbcVisualFlag.AffectsMeasureAndLayout;
             }
 
-            if (flag == AbcVisualFlag.AffectsMeasureAndLayout)
-            {
-                if (this.isDesiredSizeValid)
-                {
-                    //this.Send Measure Request
-                    //this.Send Layout Request
-                }
-            }
-
-            if (flag == AbcVisualFlag.AffectsLayout)
-            {
-                //this.Send Measure Request
-            }
         }
     }
 }

@@ -1,8 +1,10 @@
-﻿namespace Abc.Visuals
+﻿using Abc.Primitives;
+
+namespace Abc.Visuals
 {
     internal class AbcStack : AbcVisualsContainer
     {
-        protected override AbcSize CalculateDesiredSizeOverride(AbcMeasureContext context)
+        protected override AbcSize MeasureOverride(AbcMeasureContext context)
         {
             if (this.children.Count == 0)
             {
@@ -16,15 +18,15 @@
 
             foreach (AbcVisual child in this.children)
             {
-                child.CalculateDesiredSize(childContext);
+                child.Measure(childContext);
 
-                if (desiredWidth < child.DesiredSize.width)
+                if (desiredWidth < child.DesiredMeasure.width)
                 {
-                    desiredWidth = child.DesiredSize.width;
+                    desiredWidth = child.DesiredMeasure.width;
                 }
-                desiredHeight += child.DesiredSize.height;
+                desiredHeight += child.DesiredMeasure.height;
 
-                childContext.availableSize.height -= child.DesiredSize.height;
+                childContext.availableSize.height -= child.DesiredMeasure.height;
                 if (childContext.availableSize.height < 0)
                 {
                     childContext.availableSize.height = 0;

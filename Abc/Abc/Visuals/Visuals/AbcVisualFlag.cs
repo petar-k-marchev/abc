@@ -3,7 +3,9 @@
     enum AbcVisualFlag
     {
         None,
-        AffectsLayout,
+        AffectsLayoutOnly,
+        AffectsLayoutAndMaybeMeasure,
+        AffectsMeasureOnly,
         AffectsMeasureAndLayout,
     }
 }

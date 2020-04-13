@@ -1,19 +1,12 @@
 ﻿namespace Abc.Visuals
 {
-    internal class AbcMeasureContext
+    internal abstract class AbcMLContext
     {
-        internal readonly AbcMeasureContext owner;
-
-        internal AbcSize availableSize;
+        private readonly AbcMLContext owner;
 
         private AbcBag bag;
 
-        internal AbcMeasureContext(AbcSize availableSize)
-        {
-            this.availableSize = availableSize;
-        }
-
-        internal AbcMeasureContext(AbcMeasureContext owner)
+        internal AbcMLContext(AbcMLContext owner = null)
         {
             this.owner = owner;
         }

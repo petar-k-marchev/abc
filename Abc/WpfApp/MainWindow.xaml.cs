@@ -7,6 +7,8 @@ namespace WpfApp
         public MainWindow()
         {
             InitializeComponent();
+
+            this.Content = new WpfControls.DataVisualization.WpfNumericAxis();
         }
     }
 }

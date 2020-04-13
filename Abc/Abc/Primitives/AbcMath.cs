@@ -1,4 +1,4 @@
-﻿namespace Abc.Visuals
+﻿namespace Abc.Primitives
 {
     internal static class AbcMath
     {

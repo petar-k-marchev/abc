@@ -15,7 +15,7 @@
                 if (this.text != value)
                 {
                     this.text = value;
-                    this.AddFlag(AbcVisualFlag.AffectsMeasureAndLayout);
+                    this.AddFlag(AbcVisualFlag.AffectsLayoutAndMaybeMeasure);
                 }
             }
         }
