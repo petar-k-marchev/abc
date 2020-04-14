@@ -2,9 +2,9 @@
 using Abc.Primitives;
 using Abc.Visuals;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace WpfControls
 {
@@ -12,8 +12,18 @@ namespace WpfControls
     {
         internal static readonly AbcContextualPropertyKey NativeVisualWrapPropertyKey = new AbcContextualPropertyKey();
 
+        private static readonly Dictionary<Type, Func<AbcVisual, NativeVisualWrap>> abcVisualTypeToNativeWrap;
+
         private AbcVisual abcRoot;
         private UIElement nativeRoot;
+
+        static WpfVisualTree()
+        {
+            abcVisualTypeToNativeWrap = new Dictionary<Type, Func<AbcVisual, NativeVisualWrap>>();
+            abcVisualTypeToNativeWrap[typeof(AbcLabel)] = CreateLabelWrap;
+            abcVisualTypeToNativeWrap[typeof(AbcCanvas)] = CreateCanvasWrap;
+            abcVisualTypeToNativeWrap[typeof(AbcRectangle)] = CreateRectangleWrap;
+        }
 
         internal AbcVisual AbcRoot
         {
@@ -81,26 +91,6 @@ namespace WpfControls
             return new AbcSize(nativeVisual.DesiredSize.Width, nativeVisual.DesiredSize.Height);
         }
 
-        private static UIElement CreateNativeVisual(AbcVisual abcVisual)
-        {
-            if (abcVisual is AbcLabel)
-            {
-                return new TextBlock() { Text = "are de" };
-            }
-
-            if (abcVisual is AbcCanvas)
-            {
-                return new Canvas() { Background = Brushes.LightBlue };
-            }
-
-            if (abcVisual is AbcRectangle)
-            {
-                return new Border() { Background = Brushes.DarkGreen };
-            }
-
-            throw new NotImplementedException();
-        }
-
         private static NativeVisualWrap GetWrap(AbcVisual abcVisual)
         {
             if (abcVisual == null)
@@ -119,9 +109,8 @@ namespace WpfControls
             NativeVisualWrap nativeVisualWrap = GetWrap(abcVisual);
             if (nativeVisualWrap == null)
             {
-                nativeVisualWrap = new NativeVisualWrap();
+                nativeVisualWrap = CreateWrap(abcVisual);                
                 abcVisual.SetContextualPropertyValue(NativeVisualWrapPropertyKey, new AbcContextualPropertyValue.AbcObject { value = nativeVisualWrap });
-                nativeVisualWrap.nativeVisual = CreateNativeVisual(abcVisual);
             }
             return nativeVisualWrap;
         }
@@ -136,6 +125,46 @@ namespace WpfControls
         {
             Panel oldPanel = (Panel)parent;
             oldPanel.Children.Remove(visual);
+        }
+
+        private static NativeVisualWrap CreateWrap(AbcVisual abcVisual)
+        {
+            Type type = abcVisual.GetType();
+            Func<AbcVisual, NativeVisualWrap> func;
+            if (abcVisualTypeToNativeWrap.TryGetValue(type, out func))
+            {
+                NativeVisualWrap wrap = func(abcVisual);
+                return wrap;
+            }
+
+            foreach (var pair in abcVisualTypeToNativeWrap)
+            {
+                if (type.IsSubclassOf(pair.Key))
+                {
+                    NativeVisualWrap wrap = pair.Value(abcVisual);
+                    return wrap;
+                }
+            }
+
+            throw new Exception();
+        }
+
+        private static NativeVisualWrap CreateLabelWrap(AbcVisual abcVisual)
+        {
+            WpfVisualSyncer syncer = new WpfLabelSyncer((AbcLabel)abcVisual);
+            return new NativeVisualWrap { nativeVisual = syncer.nativeVisual, syncer = syncer };
+        }
+
+        private static NativeVisualWrap CreateCanvasWrap(AbcVisual abcVisual)
+        {
+            WpfVisualSyncer syncer = new WpfCanvasSyncer((AbcCanvas)abcVisual);
+            return new NativeVisualWrap { nativeVisual = syncer.nativeVisual, syncer = syncer };
+        }
+
+        private static NativeVisualWrap CreateRectangleWrap(AbcVisual abcVisual)
+        {
+            WpfVisualSyncer syncer = new WpfRectangleSyncer((AbcRectangle)abcVisual);
+            return new NativeVisualWrap { nativeVisual = syncer.nativeVisual, syncer = syncer };
         }
 
         private void FuseRoots()
@@ -167,6 +196,7 @@ namespace WpfControls
         class NativeVisualWrap
         {
             internal UIElement nativeVisual;
+            internal WpfVisualSyncer syncer;
         }
     }
 }
