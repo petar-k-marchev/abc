@@ -8,10 +8,11 @@ namespace Abc
     {
         internal abstract AbcSize Measure(AbcVisual visual, AbcMeasureContext context);
 
-        /// <summary>
-        /// Detach from old parent and if there is a new parent, then attach to it.
-        /// </summary>
-        internal abstract void AttachToNativeParent(AbcVisual abcVisual, AbcVisual oldVisualParent);
+        internal abstract void AttachToNativeParent(AbcVisual abcVisual);
+
+        internal abstract void DetachFromNativeParent(AbcVisual abcVisual, AbcVisual oldParent);
+
+        internal abstract void DetachFromVisualTree(AbcVisual abcVisual);
 
         internal virtual AbcVisual CreateVisual(Type type)
         {

@@ -10,19 +10,19 @@ namespace WpfControls
 {
     internal class WpfVisualTree : AbcVisualTree
     {
-        internal static readonly AbcContextualPropertyKey NativeVisualWrapPropertyKey = new AbcContextualPropertyKey();
+        internal static readonly AbcContextualPropertyKey SyncerPropertyKey = new AbcContextualPropertyKey();
 
-        private static readonly Dictionary<Type, Func<AbcVisual, NativeVisualWrap>> abcVisualTypeToNativeWrap;
+        private static readonly Dictionary<Type, Func<AbcVisual, WpfVisualSyncer>> syncerCreator;
 
         private AbcVisual abcRoot;
         private UIElement nativeRoot;
 
         static WpfVisualTree()
         {
-            abcVisualTypeToNativeWrap = new Dictionary<Type, Func<AbcVisual, NativeVisualWrap>>();
-            abcVisualTypeToNativeWrap[typeof(AbcLabel)] = CreateLabelWrap;
-            abcVisualTypeToNativeWrap[typeof(AbcCanvas)] = CreateCanvasWrap;
-            abcVisualTypeToNativeWrap[typeof(AbcRectangle)] = CreateRectangleWrap;
+            syncerCreator = new Dictionary<Type, Func<AbcVisual, WpfVisualSyncer>>();
+            syncerCreator[typeof(AbcLabel)] = CreateLabelSyncer;
+            syncerCreator[typeof(AbcCanvas)] = CreateCanvasSyncer;
+            syncerCreator[typeof(AbcRectangle)] = CreateRectangleSyncer;
         }
 
         internal AbcVisual AbcRoot
@@ -64,55 +64,86 @@ namespace WpfControls
             }
         }
 
-        internal override void AttachToNativeParent(AbcVisual abcVisual, AbcVisual oldVisualParent)
+        internal override void AttachToNativeParent(AbcVisual abcVisual)
         {
-            NativeVisualWrap visualWrap = GetOrCreateWrap(abcVisual);
-            NativeVisualWrap oldParentWrap = GetWrap(oldVisualParent);
-
-            if (oldParentWrap?.nativeVisual != null)
-            {
-                RemoveVisualFromParent(visualWrap.nativeVisual, oldParentWrap.nativeVisual);
-            }
-
             if (abcVisual.VisualParent == null)
             {
                 return;
             }
 
-            NativeVisualWrap parentWrap = GetOrCreateWrap(abcVisual.VisualParent);
-            AddVisualToParent(visualWrap.nativeVisual, parentWrap.nativeVisual);
+            WpfVisualSyncer visualSyncer = GetOrCreateSyncer(abcVisual);
+            WpfVisualSyncer parentSyncer = GetOrCreateSyncer(abcVisual.VisualParent);
+
+            visualSyncer.StartSync();
+            AddVisualToParent(visualSyncer.nativeVisual, parentSyncer.nativeVisual);
+        }
+
+        internal override void DetachFromNativeParent(AbcVisual abcVisual, AbcVisual oldParent)
+        {
+            WpfVisualSyncer visualSyncer = GetSyncer(abcVisual);
+            WpfVisualSyncer oldParentSyncer = GetSyncer(oldParent);
+
+            if (visualSyncer != null &&
+                oldParentSyncer != null)
+            {
+                visualSyncer.StopSync();
+                RemoveVisualFromParent(visualSyncer.nativeVisual, oldParentSyncer.nativeVisual);
+            }
+        }
+
+        internal override void DetachFromVisualTree(AbcVisual abcVisual)
+        {
+            WpfVisualSyncer visualSyncer = GetSyncer(abcVisual);
+            if (visualSyncer == null)
+            {
+                return;
+            }
+
+            WpfVisualSyncer parentSyncer = GetSyncer(abcVisual.VisualParent);
+            if (parentSyncer != null)
+            {
+                visualSyncer.StopSync();
+                RemoveVisualFromParent(visualSyncer.nativeVisual, parentSyncer.nativeVisual);
+            }
+
+            SetSyncer(abcVisual, null);
         }
 
         internal override AbcSize Measure(AbcVisual abcVisual, AbcMeasureContext context)
         {
-            NativeVisualWrap visualWrap = GetWrap(abcVisual);
-            UIElement nativeVisual = (UIElement)visualWrap.nativeVisual;
+            WpfVisualSyncer visualSyncer = GetSyncer(abcVisual);
+            UIElement nativeVisual = visualSyncer.nativeVisual;
             nativeVisual.Measure(new Size(context.availableSize.width, context.availableSize.height));
             return new AbcSize(nativeVisual.DesiredSize.Width, nativeVisual.DesiredSize.Height);
         }
 
-        private static NativeVisualWrap GetWrap(AbcVisual abcVisual)
+        private static WpfVisualSyncer GetSyncer(AbcVisual abcVisual)
         {
             if (abcVisual == null)
             {
                 return null;
             }
 
-            AbcContextualPropertyValue nativeVisualWrapPropertyValue = abcVisual.GetContextualPropertyValue(NativeVisualWrapPropertyKey);
-            object nativeVisualObject = ((AbcContextualPropertyValue.AbcObject)nativeVisualWrapPropertyValue)?.value;
-            NativeVisualWrap nativeVisualWrap = (NativeVisualWrap)nativeVisualObject;
-            return nativeVisualWrap;
+            AbcContextualPropertyValue syncerPropertyValue = abcVisual.GetContextualPropertyValue(SyncerPropertyKey);
+            object syncerObject = ((AbcContextualPropertyValue.AbcObject)syncerPropertyValue)?.value;
+            WpfVisualSyncer syncer = (WpfVisualSyncer)syncerObject;
+            return syncer;
         }
 
-        private static NativeVisualWrap GetOrCreateWrap(AbcVisual abcVisual)
+        private static void SetSyncer(AbcVisual abcVisual, WpfVisualSyncer syncer)
         {
-            NativeVisualWrap nativeVisualWrap = GetWrap(abcVisual);
-            if (nativeVisualWrap == null)
+            abcVisual.SetContextualPropertyValue(SyncerPropertyKey, new AbcContextualPropertyValue.AbcObject { value = syncer });
+        }
+
+        private static WpfVisualSyncer GetOrCreateSyncer(AbcVisual abcVisual)
+        {
+            WpfVisualSyncer syncer = GetSyncer(abcVisual);
+            if (syncer == null)
             {
-                nativeVisualWrap = CreateWrap(abcVisual);                
-                abcVisual.SetContextualPropertyValue(NativeVisualWrapPropertyKey, new AbcContextualPropertyValue.AbcObject { value = nativeVisualWrap });
+                syncer = CreateSyncer(abcVisual);
+                SetSyncer(abcVisual, syncer);
             }
-            return nativeVisualWrap;
+            return syncer;
         }
 
         private static void AddVisualToParent(UIElement visual, UIElement parent)
@@ -127,44 +158,41 @@ namespace WpfControls
             oldPanel.Children.Remove(visual);
         }
 
-        private static NativeVisualWrap CreateWrap(AbcVisual abcVisual)
+        private static WpfVisualSyncer CreateSyncer(AbcVisual abcVisual)
         {
-            Type type = abcVisual.GetType();
-            Func<AbcVisual, NativeVisualWrap> func;
-            if (abcVisualTypeToNativeWrap.TryGetValue(type, out func))
+            Type abcVisualType = abcVisual.GetType();
+            Func<AbcVisual, WpfVisualSyncer> creator;
+            if (syncerCreator.TryGetValue(abcVisualType, out creator))
             {
-                NativeVisualWrap wrap = func(abcVisual);
-                return wrap;
+                WpfVisualSyncer syncer = creator(abcVisual);
+                return syncer;
             }
 
-            foreach (var pair in abcVisualTypeToNativeWrap)
+            foreach (var pair in syncerCreator)
             {
-                if (type.IsSubclassOf(pair.Key))
+                if (abcVisualType.IsSubclassOf(pair.Key))
                 {
-                    NativeVisualWrap wrap = pair.Value(abcVisual);
-                    return wrap;
+                    WpfVisualSyncer syncer = pair.Value(abcVisual);
+                    return syncer;
                 }
             }
 
             throw new Exception();
         }
 
-        private static NativeVisualWrap CreateLabelWrap(AbcVisual abcVisual)
+        private static WpfVisualSyncer CreateLabelSyncer(AbcVisual abcVisual)
         {
-            WpfVisualSyncer syncer = new WpfLabelSyncer((AbcLabel)abcVisual);
-            return new NativeVisualWrap { nativeVisual = syncer.nativeVisual, syncer = syncer };
+            return new WpfLabelSyncer((AbcLabel)abcVisual);
         }
 
-        private static NativeVisualWrap CreateCanvasWrap(AbcVisual abcVisual)
+        private static WpfVisualSyncer CreateCanvasSyncer(AbcVisual abcVisual)
         {
-            WpfVisualSyncer syncer = new WpfCanvasSyncer((AbcCanvas)abcVisual);
-            return new NativeVisualWrap { nativeVisual = syncer.nativeVisual, syncer = syncer };
+            return new WpfCanvasSyncer((AbcCanvas)abcVisual);
         }
 
-        private static NativeVisualWrap CreateRectangleWrap(AbcVisual abcVisual)
+        private static WpfVisualSyncer CreateRectangleSyncer(AbcVisual abcVisual)
         {
-            WpfVisualSyncer syncer = new WpfRectangleSyncer((AbcRectangle)abcVisual);
-            return new NativeVisualWrap { nativeVisual = syncer.nativeVisual, syncer = syncer };
+            return new WpfRectangleSyncer((AbcRectangle)abcVisual);
         }
 
         private void FuseRoots()
@@ -175,28 +203,23 @@ namespace WpfControls
                 return;
             }
 
-            NativeVisualWrap visualWrap = GetOrCreateWrap(this.AbcRoot);
-            AddVisualToParent(visualWrap.nativeVisual, this.NativeRoot);
+            WpfVisualSyncer visualSyncer = GetOrCreateSyncer(this.AbcRoot);
+            AddVisualToParent(visualSyncer.nativeVisual, this.NativeRoot);
         }
 
         private void DiffuseRoots()
         {
-            if (this.NativeRoot == null)
+            if (this.AbcRoot == null ||
+                this.NativeRoot == null)
             {
                 return;
             }
-            
-            NativeVisualWrap visualWrap = GetWrap(this.AbcRoot);
-            if (visualWrap != null)
-            {
-                RemoveVisualFromParent(visualWrap.nativeVisual, this.NativeRoot);
-            }
-        }
 
-        class NativeVisualWrap
-        {
-            internal UIElement nativeVisual;
-            internal WpfVisualSyncer syncer;
+            WpfVisualSyncer visualSyncer = GetSyncer(this.AbcRoot);
+            if (visualSyncer != null)
+            {
+                RemoveVisualFromParent(visualSyncer.nativeVisual, this.NativeRoot);
+            }
         }
     }
 }

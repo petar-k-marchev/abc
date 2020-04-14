@@ -16,11 +16,18 @@ namespace Abc.Visuals
         private void Children_ItemAdded(object sender, ObservableItemCollectionChangedEventArgs<AbcVisual> e)
         {
             e.Item.VisualParent = this;
+
+            if (this.VisualTree != null)
+            {
+                e.Item.VisualTree = this.VisualTree;
+            }
         }
 
         private void Children_ItemRemoved(object sender, ObservableItemCollectionChangedEventArgs<AbcVisual> e)
         {
             e.Item.VisualParent = null;
+
+            // Deliberately do not diconnect from VisualTree, so virtualization can be more efficient.
         }
 
         protected override void OnVisualTreeChanged(AbcVisualTree oldVisualTree)

@@ -6,8 +6,8 @@ namespace Abc.Visuals
 {
     internal abstract class AbcVisual
     {
-        private AbcVisualTree visualTree;
         private AbcVisual visualParent;
+        private AbcVisualTree visualTree;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
         private bool isMeasurePhase;
         private AbcSize desiredMeasure;
@@ -16,24 +16,12 @@ namespace Abc.Visuals
         private AbcRect layoutSlot;
         private bool isLayoutValid;
 
-        internal AbcVisualTree VisualTree
-        {
-            get
-            {
-                return this.visualTree;
-            }
-            set
-            {
-                if (this.visualTree == value)
-                {
-                    throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(VisualTree)));
-                }
-
-                AbcVisualTree oldVisualTree = this.visualTree;
-                this.visualTree = value;
-                this.OnVisualTreeChanged(oldVisualTree);
-            }
-        }
+        //// No automatic propagation for the visual tree.
+        //// Set the visual parent always to the actual corresponding parent. 
+        //// Set the visual tree only if 
+        ////    A) The parent has a visual tree.
+        //// or
+        ////    B) You want to remove the visual (and discard all native bits) from the visual tree.
 
         internal AbcVisual VisualParent
         {
@@ -55,8 +43,26 @@ namespace Abc.Visuals
 
                 AbcVisual oldVisualParent = this.visualParent;
                 this.visualParent = value;
-                this.VisualTree = this.visualParent?.VisualTree;
                 this.OnVisualParentChanged(oldVisualParent);
+            }
+        }
+
+        internal AbcVisualTree VisualTree
+        {
+            get
+            {
+                return this.visualTree;
+            }
+            set
+            {
+                if (this.visualTree == value)
+                {
+                    throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(VisualTree)));
+                }
+
+                AbcVisualTree oldVisualTree = this.visualTree;
+                this.visualTree = value;
+                this.OnVisualTreeChanged(oldVisualTree);
             }
         }
 
@@ -88,11 +94,28 @@ namespace Abc.Visuals
 
         protected virtual void OnVisualParentChanged(AbcVisual oldVisualParent)
         {
+            if (this.VisualTree != null)
+            {
+                if (oldVisualParent != null)
+                {
+                    this.VisualTree.DetachFromNativeParent(this, oldVisualParent);
+                }
+
+                this.VisualTree.AttachToNativeParent(this);
+            }
         }
 
         protected virtual void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
         {
-            this.VisualTree?.AttachToNativeParent(this, null);
+            if (oldVisualTree != null)
+            {
+                oldVisualTree.DetachFromVisualTree(this);
+            }
+
+            if (this.VisualParent != null)
+            {
+                this.VisualTree.AttachToNativeParent(this);
+            }
         }
 
         internal void Measure(double availableWidth, double availableHeight)
@@ -175,7 +198,6 @@ namespace Abc.Visuals
             {
                 bool affectsMeasure = flag == AbcVisualFlag.AffectsMeasureOnly || flag == AbcVisualFlag.AffectsMeasureAndLayout;
             }
-
         }
     }
 }
