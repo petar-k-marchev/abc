@@ -1,5 +1,6 @@
 ﻿using Abc.Visuals;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace WpfControls
 {
@@ -13,6 +14,8 @@ namespace WpfControls
         {
             this.abcRectangle = abcVisual;
             this.nativeBorder = (Border)this.nativeVisual;
+
+            this.nativeBorder.Background = Brushes.Black;
         }
     }
 }

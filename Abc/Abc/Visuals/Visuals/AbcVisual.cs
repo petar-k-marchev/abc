@@ -16,6 +16,9 @@ namespace Abc.Visuals
         private AbcRect layoutSlot;
         private bool isLayoutValid;
 
+        internal event EventHandler<ContextualPropertyValueChangedEventArgs> ContextualPropertyValueChanged;
+
+        //// Tips for woking with visual tree and visual parent.
         //// No automatic propagation for the visual tree.
         //// Set the visual parent always to the actual corresponding parent. 
         //// Set the visual tree only if 
@@ -187,9 +190,19 @@ namespace Abc.Visuals
                 this.contextualProperties = new Dictionary<int, AbcContextualPropertyValue>();
             }
 
+            EventHandler<ContextualPropertyValueChangedEventArgs> propertyChanged = this.ContextualPropertyValueChanged;
+            AbcContextualPropertyValue oldPropertyValue = null;
+            if (propertyChanged != null)
+            {
+                this.contextualProperties.TryGetValue(propertyKey.key, out oldPropertyValue);
+            }
+
             this.contextualProperties[propertyKey.key] = propertyValue;
 
-            // property changed notifications ?
+            if (propertyChanged != null)
+            {
+                propertyChanged(this, new ContextualPropertyValueChangedEventArgs(propertyKey, oldPropertyValue, propertyValue));
+            }
         }
 
         internal void AddFlag(AbcVisualFlag flag)
@@ -197,6 +210,20 @@ namespace Abc.Visuals
             if (this.isMeasureValid)
             {
                 bool affectsMeasure = flag == AbcVisualFlag.AffectsMeasureOnly || flag == AbcVisualFlag.AffectsMeasureAndLayout;
+            }
+        }
+
+        internal struct ContextualPropertyValueChangedEventArgs
+        {
+            internal readonly AbcContextualPropertyKey propertyKey;
+            internal readonly AbcContextualPropertyValue oldPropertyValue;
+            internal readonly AbcContextualPropertyValue newPropertyValue;
+
+            public ContextualPropertyValueChangedEventArgs(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue oldPropertyValue, AbcContextualPropertyValue newPropertyValue)
+            {
+                this.propertyKey = propertyKey;
+                this.oldPropertyValue = oldPropertyValue;
+                this.newPropertyValue = newPropertyValue;
             }
         }
     }

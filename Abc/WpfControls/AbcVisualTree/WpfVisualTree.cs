@@ -113,6 +113,11 @@ namespace WpfControls
         {
             WpfVisualSyncer visualSyncer = GetSyncer(abcVisual);
             UIElement nativeVisual = visualSyncer.nativeVisual;
+
+            FrameworkElement frameworkElement = (FrameworkElement)nativeVisual;
+            frameworkElement.Width = double.NaN;
+            frameworkElement.Height = double.NaN;
+
             nativeVisual.Measure(new Size(context.availableSize.width, context.availableSize.height));
             return new AbcSize(nativeVisual.DesiredSize.Width, nativeVisual.DesiredSize.Height);
         }

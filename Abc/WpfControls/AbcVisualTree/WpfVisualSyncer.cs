@@ -1,6 +1,8 @@
-﻿using Abc.Visuals;
+﻿using Abc.Primitives;
+using Abc.Visuals;
 using System;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace WpfControls
 {
@@ -37,11 +39,34 @@ namespace WpfControls
         internal virtual void StartSync()
         {
             this.IsSyncing = true;
+
+            this.UpdateLayoutSlot(this.abcVisual.GetContextualPropertyValue(AbcCanvas.LayoutSlotPropertyKey));
+            this.abcVisual.ContextualPropertyValueChanged += this.AbcVisual_ContextualPropertyValueChanged;
         }
 
         internal virtual void StopSync()
         {
             this.IsSyncing = false;
+
+            this.abcVisual.ContextualPropertyValueChanged -= this.AbcVisual_ContextualPropertyValueChanged;
+        }
+
+        private void AbcVisual_ContextualPropertyValueChanged(object sender, AbcVisual.ContextualPropertyValueChangedEventArgs args)
+        {
+            if (args.propertyKey == AbcCanvas.LayoutSlotPropertyKey)
+            {
+                this.UpdateLayoutSlot(args.newPropertyValue);
+            }
+        }
+
+        private void UpdateLayoutSlot(AbcContextualPropertyValue layoutSlotPropertyValue)
+        {
+            AbcRect layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : new AbcRect();
+            Canvas.SetLeft(this.nativeVisual, layoutSlot.x);
+            Canvas.SetTop(this.nativeVisual, layoutSlot.y);
+            FrameworkElement frameworkElement = (FrameworkElement)this.nativeVisual;
+            frameworkElement.Width = layoutSlot.size.width;
+            frameworkElement.Height = layoutSlot.size.height;
         }
     }
 }
