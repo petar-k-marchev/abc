@@ -87,6 +87,7 @@ namespace AbcDataVisualization
                 this.children.Add(this.firstLabel);
 
                 this.lastLabel = (AbcLabel)this.VisualTree.CreateVisual(typeof(AbcLabel));
+                this.lastLabel.FontSize.Value = 30;
                 this.children.Add(this.lastLabel);
             }
 

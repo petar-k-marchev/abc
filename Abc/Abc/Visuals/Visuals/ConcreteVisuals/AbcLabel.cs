@@ -6,7 +6,14 @@ namespace Abc.Visuals
     {
         private string text;
 
+        public AbcLabel()
+        {
+            this.FontSize = new AbcProperty.DoubleWithDefault(double.NaN);
+        }
+
         internal event EventHandler TextChanged;
+
+        internal AbcProperty.DoubleWithDefault FontSize { get; }
 
         internal string Text
         {
