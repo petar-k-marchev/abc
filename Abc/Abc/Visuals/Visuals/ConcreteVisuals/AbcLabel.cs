@@ -8,12 +8,14 @@ namespace Abc.Visuals
 
         public AbcLabel()
         {
-            this.FontSize = new AbcProperty.DoubleWithDefault(double.NaN);
+            this.FontSize2 = new AbcProperty<double>(this, AbcVisualFlag.AffectsMeasureAndLayout);
         }
 
-        internal event EventHandler TextChanged;
+    internal event EventHandler TextChanged;
 
-        internal AbcProperty.DoubleWithDefault FontSize { get; }
+        internal AbcProperty.DoubleWithDefault FontSize { get; } = new AbcProperty.DoubleWithDefault(double.NaN);
+
+        internal AbcProperty<double> FontSize2 { get; }
 
         internal string Text
         {

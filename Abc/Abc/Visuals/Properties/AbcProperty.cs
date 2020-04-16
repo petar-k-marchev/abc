@@ -63,4 +63,50 @@ namespace Abc.Visuals
             }
         }
     }
+
+    internal class AbcProperty<T>
+    {
+        private readonly AbcVisual abcVisual;
+        private readonly AbcVisualFlag visualFlag;
+
+        private T value;
+
+        internal AbcProperty(AbcVisual abcVisual, AbcVisualFlag visualFlag)
+        {
+            this.abcVisual = abcVisual;
+            this.visualFlag = visualFlag;
+        }
+
+        internal event EventHandler<AbcPropertyChangedEventArgs> Changed;
+
+        internal T Value
+        {
+            get
+            {
+                return this.value;
+            }
+            set
+            {
+                if (!object.Equals(this.value, value))
+                {
+                    T oldValue = this.value;
+                    this.value = value;
+                    this.Changed?.Invoke(this, new AbcPropertyChangedEventArgs(oldValue, value));
+                    this.abcVisual.AddFlag(this.visualFlag);
+                }
+            }
+        }
+
+        internal class AbcPropertyChangedEventArgs : EventArgs
+        {
+            private T oldValue;
+            private T newValue;
+
+            public AbcPropertyChangedEventArgs(T oldValue, T newValue)
+            {
+                this.oldValue = oldValue;
+                this.newValue = newValue;
+            }
+        }
+    }
 }
