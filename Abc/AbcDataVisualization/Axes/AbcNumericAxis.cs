@@ -14,9 +14,9 @@ namespace AbcDataVisualization
         private double userMin;
         private double userMax;
         private double userStep;
-
         private double actualMin;
         private double actualMax;
+        private double fontSize;
 
         private AbcRectangle axisLine;
         private AbcLabel firstLabel;
@@ -76,19 +76,36 @@ namespace AbcDataVisualization
             }
         }
 
+        internal double FontSize
+        {
+            get
+            {
+                return this.fontSize;
+            }
+            set
+            {
+                if (this.fontSize == value)
+                {
+                    return;
+                }
+
+                this.fontSize = value;
+                this.UpdateLabelsFontSize();
+            }
+        }
+
         protected override AbcSize MeasureOverride(AbcMeasureContext context)
         {
             if (this.axisLine == null)
             {
                 this.axisLine = (AbcRectangle)this.VisualTree.CreateVisual(typeof(AbcRectangle));
-                this.children.Add(this.axisLine);
-
                 this.firstLabel = (AbcLabel)this.VisualTree.CreateVisual(typeof(AbcLabel));
-                this.firstLabel.FontSize.Value = 30;
-                this.children.Add(this.firstLabel);
-
                 this.lastLabel = (AbcLabel)this.VisualTree.CreateVisual(typeof(AbcLabel));
-                this.lastLabel.FontSize2.Value = 30;
+                
+                this.UpdateLabelsFontSize();
+                
+                this.children.Add(this.axisLine);
+                this.children.Add(this.firstLabel);
                 this.children.Add(this.lastLabel);
             }
 
@@ -118,6 +135,15 @@ namespace AbcDataVisualization
             this.lastLabel.SetContextualPropertyValue(LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelLayoutSlot });
 
             base.LayoutOverride(context);
+        }
+
+        private void UpdateLabelsFontSize()
+        {
+            if (this.axisLine != null)
+            {
+                this.firstLabel.FontSize.Value = this.FontSize;
+                this.lastLabel.FontSize2.Value = this.FontSize;
+            }
         }
     }
 }

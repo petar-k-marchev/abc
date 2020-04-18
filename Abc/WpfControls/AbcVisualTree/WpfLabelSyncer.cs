@@ -1,5 +1,4 @@
-﻿using Abc.Primitives;
-using Abc.Visuals;
+﻿using Abc.Visuals;
 using System;
 using System.Windows.Controls;
 
@@ -56,13 +55,13 @@ namespace WpfControls
 
         private void UpdateFontSize()
         {
-            if (this.abcLabel.FontSize.IsDefault)
+            if (this.abcLabel.FontSize.Value > 0 && !this.abcLabel.FontSize.IsDefault)
             {
-                this.nativeTextBlock.ClearValue(TextBlock.FontSizeProperty);
+                this.nativeTextBlock.FontSize = this.abcLabel.FontSize.Value;
             }
             else
             {
-                this.nativeTextBlock.FontSize = this.abcLabel.FontSize.Value;
+                this.nativeTextBlock.ClearValue(TextBlock.FontSizeProperty);
             }
         }
 

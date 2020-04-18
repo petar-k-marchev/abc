@@ -49,5 +49,15 @@ namespace WpfControls.DataVisualization
 
             return arrangedSize;
         }
+
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.Property == FontSizeProperty)
+            {
+                this.abcNumericAxis.FontSize = this.FontSize;
+            }
+        }
     }
 }
