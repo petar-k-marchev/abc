@@ -11,14 +11,12 @@ namespace Abc.Visuals
                 return new AbcSize();
             }
 
-            AbcMeasureContext childContext = new AbcMeasureContext(context);
-            childContext.availableSize = context.availableSize;
             double desiredWidth = 0;
             double desiredHeight = 0;
 
             foreach (AbcVisual child in this.children)
             {
-                child.Measure(childContext);
+                child.Measure(context);
 
                 if (desiredWidth < child.DesiredMeasure.width)
                 {
@@ -26,10 +24,10 @@ namespace Abc.Visuals
                 }
                 desiredHeight += child.DesiredMeasure.height;
 
-                childContext.availableSize.height -= child.DesiredMeasure.height;
-                if (childContext.availableSize.height < 0)
+                context.availableSize.height -= child.DesiredMeasure.height;
+                if (context.availableSize.height < 0)
                 {
-                    childContext.availableSize.height = 0;
+                    context.availableSize.height = 0;
                 }
             }
 

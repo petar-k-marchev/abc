@@ -4,6 +4,9 @@ namespace Abc.Primitives
 {
     internal struct AbcRect
     {
+        internal static readonly AbcRect Empty = new AbcRect(0, 0, 0, 0);
+        internal static readonly AbcRect Invalid = new AbcRect(-1, -1, -1, -1);
+
         internal double x;
         internal double y;
         internal AbcSize size;

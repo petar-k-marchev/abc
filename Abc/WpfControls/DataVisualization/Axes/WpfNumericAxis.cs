@@ -1,6 +1,10 @@
-﻿using AbcDataVisualization;
+﻿using Abc.Primitives;
+using Abc.Visuals;
+using AbcDataVisualization;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using WpfControls.WpfDrawingVisualTreeInternals;
 
 namespace WpfControls.DataVisualization
 {
@@ -20,6 +24,7 @@ namespace WpfControls.DataVisualization
 
             //this.visualTree = new WpfVisualTree();
             this.visualTree = new WpfDrawingVisualTree();
+            this.visualTree.NativeRoot = this;
 
             this.visualTree.AbcRoot = this.abcNumericAxis;
 
@@ -32,15 +37,16 @@ namespace WpfControls.DataVisualization
         {
             base.OnApplyTemplate();
 
-            Canvas numericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
-            this.visualTree.NativeRoot = numericAxisCanvas;
+            //Canvas numericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
+            //this.visualTree.NativeRoot = numericAxisCanvas;
         }
 
         protected override Size MeasureOverride(Size constraint)
         {
             base.MeasureOverride(constraint);
 
-            this.abcNumericAxis.Measure(constraint.Width, constraint.Height);
+            AbcMeasureContext context = new AbcMeasureContext(new AbcSize(constraint.Width, constraint.Height));
+            this.abcNumericAxis.Measure(context);
             return new Size(this.abcNumericAxis.DesiredMeasure.width, this.abcNumericAxis.DesiredMeasure.height);
         }
 
@@ -48,7 +54,8 @@ namespace WpfControls.DataVisualization
         {
             Size arrangedSize = base.ArrangeOverride(arrangeBounds);
 
-            this.abcNumericAxis.Layout(0, 0, arrangeBounds.Width, arrangeBounds.Height);
+            //AbcLayoutContext context = new AbcLayoutContext(new AbcRect(0, 0, arrangeBounds.Width, arrangeBounds.Height));
+            //this.abcNumericAxis.Layout(context);
 
             return arrangedSize;
         }
@@ -61,6 +68,29 @@ namespace WpfControls.DataVisualization
             {
                 this.abcNumericAxis.FontSize = this.FontSize;
             }
+        }
+
+        protected override void OnRender(DrawingContext drawingContext)
+        {
+            base.OnRender(drawingContext);
+
+            // can draw here directly instead of in visual tree
+
+            AbcLayoutContext context = new AbcLayoutContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
+            this.abcNumericAxis.Layout(context);
+
+            // we must render these manually or optimization in engine will not call Layout
+            // seems like Layout needs to be separated - Arrange and Render ?
+
+            foreach (var child in this.abcNumericAxis.children)
+            {
+                WpfDrawCommandSyncer syncer = WpfDrawingVisualTree.GetSyncer(child);
+                if (syncer is WpfLabelSyncer labelSyncer)
+                {
+                    labelSyncer.OnRender(drawingContext);
+                }
+            }
+
         }
     }
 }

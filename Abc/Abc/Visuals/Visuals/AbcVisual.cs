@@ -121,16 +121,6 @@ namespace Abc.Visuals
             }
         }
 
-        internal void Measure(double availableWidth, double availableHeight)
-        {
-            this.Measure(new AbcSize(availableWidth, availableHeight));
-        }
-
-        internal void Measure(AbcSize availableSize)
-        {
-            this.Measure(new AbcMeasureContext(availableSize));
-        }
-
         internal void Measure(AbcMeasureContext context)
         {
             if (this.isMeasureValid)
@@ -142,16 +132,6 @@ namespace Abc.Visuals
             this.desiredMeasure = this.MeasureOverride(context);
             this.isMeasurePhase = false;
             this.isMeasureValid = true;
-        }
-
-        internal void Layout(double x, double y, double width, double height)
-        {
-            this.Layout(new AbcRect(x, y, width, height));
-        }
-
-        internal void Layout(AbcRect slot)
-        {
-            this.Layout(new AbcLayoutContext(slot));
         }
 
         internal void Layout(AbcLayoutContext context)

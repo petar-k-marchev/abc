@@ -23,10 +23,24 @@ namespace WpfControls
 
         internal override void AttachToNativeParent(AbcVisual abcVisual)
         {
+            if (abcVisual.VisualParent == null)
+            {
+                return;
+            }
+
+            WpfDrawCommandSyncer visualSyncer = GetOrCreateSyncer(abcVisual);
+            visualSyncer.StartSync();
         }
 
         internal override void DetachFromNativeParent(AbcVisual abcVisual, AbcVisual oldParent)
         {
+            WpfDrawCommandSyncer visualSyncer = GetSyncer(abcVisual);
+
+            if (visualSyncer != null &&
+                oldParent != null)
+            {
+                visualSyncer.StopSync();
+            }
         }
 
         internal override void DetachFromVisualTree(AbcVisual abcVisual)
@@ -35,12 +49,15 @@ namespace WpfControls
 
         internal override AbcSize Measure(AbcVisual abcVisual, AbcMeasureContext context)
         {
-            WpfDrawCommandSyncer visualSyncer = GetOrCreateSyncer(abcVisual);
+            WpfDrawCommandSyncer visualSyncer = GetSyncer(abcVisual);
             return visualSyncer.Measure(context);
         }
 
         internal override void OnNativeRootChanging(UIElement newNativeRoot)
         {
+            base.OnNativeRootChanging(newNativeRoot);
+            return;
+
             IDrawingSurface oldDrawingSurface = (IDrawingSurface)this.NativeRoot;
             IDrawingSurface newDrawingSurface = (IDrawingSurface)newNativeRoot;
 
@@ -57,7 +74,7 @@ namespace WpfControls
             }
         }
 
-        private static WpfDrawCommandSyncer GetSyncer(AbcVisual abcVisual)
+        internal static WpfDrawCommandSyncer GetSyncer(AbcVisual abcVisual)
         {
             if (abcVisual == null)
             {
@@ -126,21 +143,26 @@ namespace WpfControls
         private void DrawingSurface_OnRender(object sender, System.Windows.Media.DrawingContext dc)
         {
             FrameworkElement frameworkElement = (FrameworkElement)sender;
-            this.AbcRoot?.Layout(0, 0, frameworkElement.ActualWidth, frameworkElement.ActualHeight);
 
-            var axis = (AbcDataVisualization.AbcNumericAxis)this.AbcRoot;
-            foreach (var child in axis.children)
+            if (this.AbcRoot != null)
             {
-                WpfDrawCommandSyncer syncer = GetSyncer(child);
-                if (syncer is WpfLabelSyncer labelSyncer)
-                {
-                    labelSyncer.OnRender(dc);
-                }
-            }
+                AbcLayoutContext context = new AbcLayoutContext(new AbcRect(0, 0, frameworkElement.ActualWidth, frameworkElement.ActualHeight));
+                this.AbcRoot.Layout(context);
 
-            // foreach the abc visuals? and render via syncer?
-            // or inherit each visual and render (in Layout)
-            // or else
+                var axis = (AbcDataVisualization.AbcNumericAxis)this.AbcRoot;
+                foreach (var child in axis.children)
+                {
+                    WpfDrawCommandSyncer syncer = GetSyncer(child);
+                    if (syncer is WpfLabelSyncer labelSyncer)
+                    {
+                        labelSyncer.OnRender(dc);
+                    }
+                }
+
+                // foreach the abc visuals? and render via syncer?
+                // or inherit each visual and render (in Layout)
+                // or else
+            }
         }
     }
 }

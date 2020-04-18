@@ -18,16 +18,7 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
 
         internal override AbcSize Measure(AbcMeasureContext context)
         {
-            if (this.nativeFormattedText == null)
-            {
-                AbcLabel abcLabel = (AbcLabel)this.abcVisual;
-                Typeface typeface = new Typeface(string.Empty);
-                CultureInfo culture = CultureInfo.CurrentCulture;
-                double emSize = abcLabel.FontSize.Value > 0 ? abcLabel.FontSize.Value : SystemFonts.IconFontSize;
-                Brush foreground = Brushes.Black;
-                this.nativeFormattedText = new FormattedText(abcLabel.Text, culture, FlowDirection.LeftToRight, typeface, emSize, foreground, 1.25);
-            }
-
+            this.EnsureFormattedText();
             return new AbcSize(this.nativeFormattedText.Width, this.nativeFormattedText.Height);
         }
 
@@ -53,6 +44,17 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
             this.nativeFormattedText = null;
         }
 
+        internal void OnRender(DrawingContext dc)
+        {
+            this.EnsureFormattedText();
+
+            AbcContextualPropertyValue layoutSlotPropertyValue = this.abcVisual.GetContextualPropertyValue(AbcCanvas.LayoutSlotPropertyKey);
+            AbcRect layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : AbcRect.Empty;
+
+            Point position = new Point(layoutSlot.x, layoutSlot.y);
+            dc.DrawText(this.nativeFormattedText, position);
+        }
+
         private void AbcLabel_TextChanged(object sender, System.EventArgs e)
         {
             this.nativeFormattedText = null;
@@ -68,9 +70,17 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
             this.nativeFormattedText = null;
         }
 
-        internal void OnRender( DrawingContext dc)
+        private void EnsureFormattedText()
         {
-            dc.DrawText(this.nativeFormattedText, new Point());
+            if (this.nativeFormattedText == null)
+            {
+                AbcLabel abcLabel = (AbcLabel)this.abcVisual;
+                Typeface typeface = new Typeface(string.Empty);
+                CultureInfo culture = CultureInfo.CurrentCulture;
+                double emSize = abcLabel.FontSize.Value > 0 ? abcLabel.FontSize.Value : SystemFonts.IconFontSize;
+                Brush foreground = Brushes.Black;
+                this.nativeFormattedText = new FormattedText(abcLabel.Text, culture, FlowDirection.LeftToRight, typeface, emSize, foreground, 1.25);
+            }
         }
     }
 }

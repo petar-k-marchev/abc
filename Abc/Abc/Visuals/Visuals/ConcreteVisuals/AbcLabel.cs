@@ -11,7 +11,7 @@ namespace Abc.Visuals
             this.FontSize2 = new AbcProperty<double>(this, AbcVisualFlag.AffectsMeasureAndLayout);
         }
 
-    internal event EventHandler TextChanged;
+        internal event EventHandler TextChanged;
 
         internal AbcProperty.DoubleWithDefault FontSize { get; } = new AbcProperty.DoubleWithDefault(double.NaN);
 

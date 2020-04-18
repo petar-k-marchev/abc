@@ -15,7 +15,7 @@ namespace Abc.Visuals
             foreach (AbcVisual child in this.children)
             {
                 AbcContextualPropertyValue layoutSlotPropertyValue = child.GetContextualPropertyValue(LayoutSlotPropertyKey);
-                context.layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : new AbcRect();
+                context.layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : AbcRect.Empty;
                 child.Layout(context);
             }
 

@@ -4,6 +4,9 @@ using System;
 
 namespace Abc
 {
+    /// <summary>
+    /// Not mandatory. Use if you find helpful.
+    /// </summary>
     internal abstract class NativeVisualSyncer
     {
         internal readonly AbcVisual abcVisual;
