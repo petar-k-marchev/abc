@@ -2,17 +2,15 @@
 using System;
 using System.Windows.Controls;
 
-namespace WpfControls
+namespace WpfControls.WpfVisualTreeInternals
 {
     internal class WpfLabelSyncer : WpfVisualSyncer
     {
-        private readonly AbcLabel abcLabel;
         private readonly TextBlock nativeTextBlock;
 
         public WpfLabelSyncer(AbcLabel abcVisual)
             : base(abcVisual, new TextBlock())
         {
-            this.abcLabel = abcVisual;
             this.nativeTextBlock = (TextBlock)this.nativeVisual;
         }
 
@@ -20,27 +18,32 @@ namespace WpfControls
         {
             base.StartSync();
 
-            this.nativeTextBlock.Text = this.abcLabel.Text;
+            AbcLabel abcLabel = (AbcLabel)this.abcVisual;
+
+            this.nativeTextBlock.Text = abcLabel.Text;
             this.UpdateFontSize();
             this.UpdateFontSize2();
 
-            this.abcLabel.TextChanged += this.AbcLabel_TextChanged;
-            this.abcLabel.FontSize.Changed += this.AbcLabel_FontSizeChanged;
-            this.abcLabel.FontSize2.Changed += this.FontSize2_Changed;
+            abcLabel.TextChanged += this.AbcLabel_TextChanged;
+            abcLabel.FontSize.Changed += this.AbcLabel_FontSizeChanged;
+            abcLabel.FontSize2.Changed += this.FontSize2_Changed;
         }
 
         internal override void StopSync()
         {
             base.StopSync();
-         
-            this.abcLabel.TextChanged -= this.AbcLabel_TextChanged;
-            this.abcLabel.FontSize.Changed -= this.AbcLabel_FontSizeChanged;
-            this.abcLabel.FontSize2.Changed -= this.FontSize2_Changed;
+
+            AbcLabel abcLabel = (AbcLabel)this.abcVisual;
+
+            abcLabel.TextChanged -= this.AbcLabel_TextChanged;
+            abcLabel.FontSize.Changed -= this.AbcLabel_FontSizeChanged;
+            abcLabel.FontSize2.Changed -= this.FontSize2_Changed;
         }
 
         private void AbcLabel_TextChanged(object sender, System.EventArgs e)
         {
-            this.nativeTextBlock.Text = this.abcLabel.Text;
+            AbcLabel abcLabel = (AbcLabel)this.abcVisual;
+            this.nativeTextBlock.Text = abcLabel.Text;
         }
 
         private void AbcLabel_FontSizeChanged(object sender, EventArgs e)
@@ -55,9 +58,11 @@ namespace WpfControls
 
         private void UpdateFontSize()
         {
-            if (this.abcLabel.FontSize.Value > 0 && !this.abcLabel.FontSize.IsDefault)
+            AbcLabel abcLabel = (AbcLabel)this.abcVisual;
+
+            if (abcLabel.FontSize.Value > 0 && !abcLabel.FontSize.IsDefault)
             {
-                this.nativeTextBlock.FontSize = this.abcLabel.FontSize.Value;
+                this.nativeTextBlock.FontSize = abcLabel.FontSize.Value;
             }
             else
             {
@@ -67,9 +72,11 @@ namespace WpfControls
 
         private void UpdateFontSize2()
         {
-            if (this.abcLabel.FontSize2.Value > 0)
+            AbcLabel abcLabel = (AbcLabel)this.abcVisual;
+
+            if (abcLabel.FontSize2.Value > 0)
             {
-                this.nativeTextBlock.FontSize = this.abcLabel.FontSize2.Value;
+                this.nativeTextBlock.FontSize = abcLabel.FontSize2.Value;
             }
             else
             {

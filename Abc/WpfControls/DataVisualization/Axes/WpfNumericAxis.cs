@@ -7,7 +7,7 @@ namespace WpfControls.DataVisualization
     public class WpfNumericAxis : Control
     {
         private readonly AbcNumericAxis abcNumericAxis;
-        private readonly WpfVisualTree visualTree;
+        private readonly WpfVisualTreeBase visualTree;
 
         static WpfNumericAxis()
         {
@@ -17,7 +17,10 @@ namespace WpfControls.DataVisualization
         public WpfNumericAxis()
         {
             this.abcNumericAxis = new AbcNumericAxis();
-            this.visualTree = new WpfVisualTree();
+
+            //this.visualTree = new WpfVisualTree();
+            this.visualTree = new WpfDrawingVisualTree();
+
             this.visualTree.AbcRoot = this.abcNumericAxis;
 
             this.abcNumericAxis.UserMin = 0;

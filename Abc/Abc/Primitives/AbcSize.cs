@@ -4,6 +4,8 @@ namespace Abc.Primitives
 {
     internal struct AbcSize
     {
+        internal static readonly AbcSize Invalid = new AbcSize(-1, -1);
+
         internal double width;
         internal double height;
 

@@ -7,7 +7,7 @@ namespace Abc.Visuals
     internal abstract class AbcVisual
     {
         private AbcVisual visualParent;
-        private AbcVisualTree visualTree;
+        private NativeVisualTree visualTree;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
         private bool isMeasurePhase;
         private AbcSize desiredMeasure;
@@ -50,7 +50,7 @@ namespace Abc.Visuals
             }
         }
 
-        internal AbcVisualTree VisualTree
+        internal NativeVisualTree VisualTree
         {
             get
             {
@@ -63,7 +63,7 @@ namespace Abc.Visuals
                     throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(VisualTree)));
                 }
 
-                AbcVisualTree oldVisualTree = this.visualTree;
+                NativeVisualTree oldVisualTree = this.visualTree;
                 this.visualTree = value;
                 this.OnVisualTreeChanged(oldVisualTree);
             }
@@ -108,7 +108,7 @@ namespace Abc.Visuals
             }
         }
 
-        protected virtual void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
+        protected virtual void OnVisualTreeChanged(NativeVisualTree oldVisualTree)
         {
             if (oldVisualTree != null)
             {

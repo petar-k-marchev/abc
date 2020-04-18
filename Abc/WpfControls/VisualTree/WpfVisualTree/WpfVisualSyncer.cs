@@ -1,58 +1,42 @@
-﻿using Abc.Primitives;
+﻿using Abc;
+using Abc.Primitives;
 using Abc.Visuals;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace WpfControls
+namespace WpfControls.WpfVisualTreeInternals
 {
-    internal abstract class WpfVisualSyncer
+    internal abstract class WpfVisualSyncer : NativeVisualSyncer
     {
-        internal readonly AbcVisual abcVisual;
         internal readonly UIElement nativeVisual;
 
-        private bool isSyncing;
-
         protected WpfVisualSyncer(AbcVisual abcVisual, UIElement nativeVisual)
+            : base(abcVisual, hasContextualListeners: true)
         {
-            this.abcVisual = abcVisual;
             this.nativeVisual = nativeVisual;
         }
 
-        internal bool IsSyncing
+        internal override AbcSize Measure(AbcMeasureContext context)
         {
-            get
-            {
-                return this.isSyncing;
-            }
-            private set
-            {
-                if (this.isSyncing && value)
-                {
-                    throw new Exception(string.Format("You shouldn't need to call {0}() twice.", nameof(StartSync)));
-                }
+            FrameworkElement frameworkElement = (FrameworkElement)this.nativeVisual;
+            frameworkElement.Width = double.NaN;
+            frameworkElement.Height = double.NaN;
 
-                this.isSyncing = value;
-            }
+            nativeVisual.Measure(new Size(context.availableSize.width, context.availableSize.height));
+            return new AbcSize(nativeVisual.DesiredSize.Width, nativeVisual.DesiredSize.Height);
         }
 
-        internal virtual void StartSync()
+        internal override void StartSync()
         {
-            this.IsSyncing = true;
+            base.StartSync();
 
             this.UpdateLayoutSlot(this.abcVisual.GetContextualPropertyValue(AbcCanvas.LayoutSlotPropertyKey));
-            this.abcVisual.ContextualPropertyValueChanged += this.AbcVisual_ContextualPropertyValueChanged;
         }
 
-        internal virtual void StopSync()
+        internal override void OnContextualPropertyValueChanged(AbcVisual.ContextualPropertyValueChangedEventArgs args)
         {
-            this.IsSyncing = false;
+            base.OnContextualPropertyValueChanged(args);
 
-            this.abcVisual.ContextualPropertyValueChanged -= this.AbcVisual_ContextualPropertyValueChanged;
-        }
-
-        private void AbcVisual_ContextualPropertyValueChanged(object sender, AbcVisual.ContextualPropertyValueChangedEventArgs args)
-        {
             if (args.propertyKey == AbcCanvas.LayoutSlotPropertyKey)
             {
                 this.UpdateLayoutSlot(args.newPropertyValue);

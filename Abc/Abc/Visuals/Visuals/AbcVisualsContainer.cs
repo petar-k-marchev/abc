@@ -30,7 +30,7 @@ namespace Abc.Visuals
             // Deliberately do not diconnect from VisualTree, so virtualization can be more efficient.
         }
 
-        protected override void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
+        protected override void OnVisualTreeChanged(NativeVisualTree oldVisualTree)
         {
             base.OnVisualTreeChanged(oldVisualTree);
 

@@ -1,21 +1,17 @@
-﻿using Abc;
-using Abc.Primitives;
+﻿using Abc.Primitives;
 using Abc.Visuals;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using WpfControls.WpfVisualTreeInternals;
 
 namespace WpfControls
 {
-    internal class WpfVisualTree : AbcVisualTree
+    internal class WpfVisualTree : WpfVisualTreeBase
     {
-        internal static readonly AbcContextualPropertyKey SyncerPropertyKey = new AbcContextualPropertyKey();
-
+        private static readonly AbcContextualPropertyKey SyncerPropertyKey = new AbcContextualPropertyKey();
         private static readonly Dictionary<Type, Func<AbcVisual, WpfVisualSyncer>> syncerCreator;
-
-        private AbcVisual abcRoot;
-        private UIElement nativeRoot;
 
         static WpfVisualTree()
         {
@@ -23,45 +19,6 @@ namespace WpfControls
             syncerCreator[typeof(AbcLabel)] = CreateLabelSyncer;
             syncerCreator[typeof(AbcCanvas)] = CreateCanvasSyncer;
             syncerCreator[typeof(AbcRectangle)] = CreateRectangleSyncer;
-        }
-
-        internal AbcVisual AbcRoot
-        {
-            get
-            {
-                return this.abcRoot;
-            }
-            set
-            {
-                if (this.abcRoot == value)
-                {
-                    throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(AbcRoot)));
-                }
-
-                this.DiffuseRoots();
-                this.abcRoot = value;
-                this.abcRoot.VisualTree = this;
-                this.FuseRoots();
-            }
-        }
-
-        internal UIElement NativeRoot
-        {
-            get
-            {
-                return this.nativeRoot;
-            }
-            set
-            {
-                if (this.nativeRoot == value)
-                {
-                    throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(NativeRoot)));
-                }
-
-                this.DiffuseRoots();
-                this.nativeRoot = value;
-                this.FuseRoots();
-            }
         }
 
         internal override void AttachToNativeParent(AbcVisual abcVisual)
@@ -112,14 +69,21 @@ namespace WpfControls
         internal override AbcSize Measure(AbcVisual abcVisual, AbcMeasureContext context)
         {
             WpfVisualSyncer visualSyncer = GetSyncer(abcVisual);
-            UIElement nativeVisual = visualSyncer.nativeVisual;
+            return visualSyncer.Measure(context);
+        }
 
-            FrameworkElement frameworkElement = (FrameworkElement)nativeVisual;
-            frameworkElement.Width = double.NaN;
-            frameworkElement.Height = double.NaN;
+        internal override void OnAbcRootChanging(AbcVisual value)
+        {
+            this.DiffuseRoots();
+            base.OnAbcRootChanging(value);
+            this.FuseRoots();
+        }
 
-            nativeVisual.Measure(new Size(context.availableSize.width, context.availableSize.height));
-            return new AbcSize(nativeVisual.DesiredSize.Width, nativeVisual.DesiredSize.Height);
+        internal override void OnNativeRootChanging(UIElement newNativeRoot)
+        {
+            this.DiffuseRoots();
+            base.OnNativeRootChanging(newNativeRoot);
+            this.FuseRoots();
         }
 
         private static WpfVisualSyncer GetSyncer(AbcVisual abcVisual)
