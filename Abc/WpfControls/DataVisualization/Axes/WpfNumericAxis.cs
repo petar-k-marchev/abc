@@ -19,9 +19,7 @@ namespace WpfControls.DataVisualization
 
         public WpfNumericAxis()
         {
-            this.abcNumericAxis = new AbcNumericAxis();
-
-            if (false)
+            if (true)
             {
                 this.visualTree = new WpfVisualTree();
             }
@@ -31,6 +29,7 @@ namespace WpfControls.DataVisualization
                 this.visualTree.NativeRoot = this;
             }
 
+            this.abcNumericAxis = new AbcNumericAxis();
             this.visualTree.AbcRoot = this.abcNumericAxis;
 
             this.abcNumericAxis.UserMin = 0;
@@ -75,9 +74,20 @@ namespace WpfControls.DataVisualization
         {
             base.OnPropertyChanged(e);
 
-            if (e.Property == FontSizeProperty)
+            if (this.visualTree is WpfVisualTree)
             {
-                this.abcNumericAxis.FontSize = this.FontSize;
+                // font size propagates automatically to visuals
+                // we can skip notifying axis (for testing purposes mainly)
+                // now we must expect for visual-tree-part to let the engine know there is a measure invalidated
+            }
+            else
+            {
+
+
+                if (e.Property == FontSizeProperty)
+                {
+                    this.abcNumericAxis.FontSize = this.FontSize;
+                }
             }
         }
 
