@@ -6,6 +6,6 @@
 
     internal static class AbcCanvasContextualProperties
     {
-        internal static readonly AbcContextualPropertyKey LayoutSlotPropertyKey = new AbcContextualPropertyKey();
+        internal static readonly AbcContextualPropertyKey ArrangeSlotPropertyKey = new AbcContextualPropertyKey();
     }
 }

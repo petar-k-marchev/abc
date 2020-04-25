@@ -21,7 +21,7 @@ namespace Abc.Visuals
                 if (this.text != value)
                 {
                     this.text = value;
-                    this.AddFlag(AbcVisualFlag.AffectsLayoutAndMaybeMeasure);
+                    this.AddFlag(AbcVisualFlag.AffectsArrangeAndMaybeMeasure);
                     this.TextChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
@@ -38,7 +38,7 @@ namespace Abc.Visuals
                 if (this.fontSize != value)
                 {
                     this.fontSize = value;
-                    this.AddFlag(AbcVisualFlag.AffectsMeasureAndLayout);
+                    this.AddFlag(AbcVisualFlag.AffectsMeasureAndArrange);
                     this.FontSizeChanged?.Invoke(this, EventArgs.Empty);
                 }
             }

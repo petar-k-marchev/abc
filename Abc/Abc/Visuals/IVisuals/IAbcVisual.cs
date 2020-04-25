@@ -13,11 +13,11 @@ namespace Abc.Visuals
 
         AbcSize DesiredMeasure { get; }
 
-        AbcRect LayoutSlot { get; }
+        AbcRect ArrangeSlot { get; }
 
         void Measure(AbcMeasureContext context);
 
-        void Layout(AbcLayoutContext context);
+        void Arrange(AbcArrangeContext context);
 
         AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey);
 

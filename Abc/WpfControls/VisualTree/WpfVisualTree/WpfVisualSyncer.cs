@@ -30,27 +30,27 @@ namespace WpfControls.WpfVisualTreeInternals
         {
             base.StartSync();
 
-            this.UpdateLayoutSlot(this.abcVisual.GetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey));
+            this.UpdateArrangeSlot(this.abcVisual.GetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey));
         }
 
         internal override void OnContextualPropertyValueChanged(AbcContextualPropertyValueChangedEventArgs args)
         {
             base.OnContextualPropertyValueChanged(args);
 
-            if (args.propertyKey == AbcCanvasContextualProperties.LayoutSlotPropertyKey)
+            if (args.propertyKey == AbcCanvasContextualProperties.ArrangeSlotPropertyKey)
             {
-                this.UpdateLayoutSlot(args.newPropertyValue);
+                this.UpdateArrangeSlot(args.newPropertyValue);
             }
         }
 
-        private void UpdateLayoutSlot(AbcContextualPropertyValue layoutSlotPropertyValue)
+        private void UpdateArrangeSlot(AbcContextualPropertyValue arrangeSlotPropertyValue)
         {
-            AbcRect layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : new AbcRect();
-            Canvas.SetLeft(this.nativeVisual, layoutSlot.x);
-            Canvas.SetTop(this.nativeVisual, layoutSlot.y);
+            AbcRect arrangeSlot = arrangeSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)arrangeSlotPropertyValue).value : new AbcRect();
+            Canvas.SetLeft(this.nativeVisual, arrangeSlot.x);
+            Canvas.SetTop(this.nativeVisual, arrangeSlot.y);
             FrameworkElement frameworkElement = (FrameworkElement)this.nativeVisual;
-            frameworkElement.Width = layoutSlot.size.width;
-            frameworkElement.Height = layoutSlot.size.height;
+            frameworkElement.Width = arrangeSlot.size.width;
+            frameworkElement.Height = arrangeSlot.size.height;
         }
     }
 }

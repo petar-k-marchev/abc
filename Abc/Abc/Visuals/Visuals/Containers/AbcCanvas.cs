@@ -4,20 +4,16 @@ namespace Abc.Visuals
 {
     internal class AbcCanvas : AbcVisualsContainer, IAbcCanvas
     {
-        protected override void LayoutOverride(AbcLayoutContext context)
+        protected override void ArrangeOverride(AbcArrangeContext context)
         {
-            base.LayoutOverride(context);
+            base.ArrangeOverride(context);
             
-            AbcRect contextLayoutSlot = context.layoutSlot;
-
             foreach (AbcVisual child in this.Children)
             {
-                AbcContextualPropertyValue layoutSlotPropertyValue = child.GetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey);
-                context.layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : AbcRect.Empty;
-                child.Layout(context);
+                AbcContextualPropertyValue arrangeSlotPropertyValue = child.GetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey);
+                context.arrangeSlot = arrangeSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)arrangeSlotPropertyValue).value : AbcRect.Empty;
+                child.Arrange(context);
             }
-
-            context.layoutSlot = contextLayoutSlot;
         }
     }
 }

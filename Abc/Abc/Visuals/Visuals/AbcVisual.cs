@@ -12,9 +12,9 @@ namespace Abc.Visuals
         private bool isMeasurePhase;
         private AbcSize desiredMeasure;
         private bool isMeasureValid;
-        private bool isLayoutPhase;
-        private AbcRect layoutSlot;
-        private bool isLayoutValid;
+        private bool isArrangePhase;
+        private AbcRect arrangeSlot;
+        private bool isArrangeValid;
 
         public event EventHandler<AbcContextualPropertyValueChangedEventArgs> ContextualPropertyValueChanged;
 
@@ -77,11 +77,11 @@ namespace Abc.Visuals
             }
         }
 
-        public AbcRect LayoutSlot
+        public AbcRect ArrangeSlot
         {
             get
             {
-                return this.layoutSlot;
+                return this.arrangeSlot;
             }
         }
 
@@ -91,7 +91,7 @@ namespace Abc.Visuals
             return size;
         }
 
-        protected virtual void LayoutOverride(AbcLayoutContext context)
+        protected virtual void ArrangeOverride(AbcArrangeContext context)
         {
         }
 
@@ -134,23 +134,24 @@ namespace Abc.Visuals
             this.isMeasureValid = true;
         }
 
-        public void Layout(AbcLayoutContext context)
+        public void Arrange(AbcArrangeContext context)
         {
-            if (this.isLayoutValid)
+            if (this.isArrangeValid)
             {
-                this.isLayoutValid = this.layoutSlot == context.layoutSlot;
+                this.isArrangeValid = this.arrangeSlot == context.arrangeSlot;
             }
 
-            if (this.isLayoutValid)
+            if (this.isArrangeValid)
             {
                 return;
             }
 
-            this.isLayoutPhase = true;
-            this.layoutSlot = context.layoutSlot;
-            this.LayoutOverride(context);
-            this.isLayoutPhase = false;
-            this.isLayoutValid = true;
+            this.isArrangePhase = true;
+            this.arrangeSlot = context.arrangeSlot;
+            this.ArrangeOverride(context);
+            context.arrangeSlot = this.arrangeSlot;
+            this.isArrangePhase = false;
+            this.isArrangeValid = true;
         }
 
         public AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)
@@ -189,7 +190,7 @@ namespace Abc.Visuals
         {
             if (this.isMeasureValid)
             {
-                bool affectsMeasure = flag == AbcVisualFlag.AffectsMeasureOnly || flag == AbcVisualFlag.AffectsMeasureAndLayout;
+                bool affectsMeasure = flag == AbcVisualFlag.AffectsMeasureOnly || flag == AbcVisualFlag.AffectsMeasureAndArrange;
             }
         }
     }

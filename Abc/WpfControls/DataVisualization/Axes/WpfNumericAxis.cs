@@ -64,8 +64,8 @@ namespace WpfControls.DataVisualization
 
             if (this.visualTree is WpfVisualTree)
             {
-                AbcLayoutContext context = new AbcLayoutContext(new AbcRect(0, 0, arrangeBounds.Width, arrangeBounds.Height));
-                this.abcNumericAxis.Layout(context);
+                AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, arrangeBounds.Width, arrangeBounds.Height));
+                this.abcNumericAxis.Arrange(context);
             }
 
             return arrangedSize;
@@ -87,8 +87,8 @@ namespace WpfControls.DataVisualization
 
             if (this.visualTree is WpfDrawingVisualTree wpfDrawingVisualTree)
             {
-                AbcLayoutContext context = new AbcLayoutContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
-                this.abcNumericAxis.Layout(context);
+                AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
+                this.abcNumericAxis.Arrange(context);
                 wpfDrawingVisualTree.Render(drawingContext);
             }
         }

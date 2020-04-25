@@ -46,10 +46,10 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
         {
             this.EnsureFormattedText();
 
-            AbcContextualPropertyValue layoutSlotPropertyValue = this.abcVisual.GetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey);
-            AbcRect layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : AbcRect.Empty;
+            AbcContextualPropertyValue arrangeSlotPropertyValue = this.abcVisual.GetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey);
+            AbcRect arrangeSlot = arrangeSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)arrangeSlotPropertyValue).value : AbcRect.Empty;
 
-            Point position = new Point(layoutSlot.x, layoutSlot.y);
+            Point position = new Point(arrangeSlot.x, arrangeSlot.y);
             dc.DrawText(this.nativeFormattedText, position);
         }
 

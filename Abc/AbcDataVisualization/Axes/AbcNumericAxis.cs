@@ -36,7 +36,7 @@ namespace AbcDataVisualization
                 }
 
                 this.userMin = value;
-                this.AddFlag(AbcVisualFlag.AffectsLayoutAndMaybeMeasure);
+                this.AddFlag(AbcVisualFlag.AffectsArrangeAndMaybeMeasure);
             }
         }
 
@@ -54,7 +54,7 @@ namespace AbcDataVisualization
                 }
 
                 this.userMax = value;
-                this.AddFlag(AbcVisualFlag.AffectsLayoutAndMaybeMeasure);
+                this.AddFlag(AbcVisualFlag.AffectsArrangeAndMaybeMeasure);
             }
         }
 
@@ -72,7 +72,7 @@ namespace AbcDataVisualization
                 }
 
                 this.userStep = value;
-                this.AddFlag(AbcVisualFlag.AffectsLayoutOnly);
+                this.AddFlag(AbcVisualFlag.AffectsArrangeOnly);
             }
         }
 
@@ -121,20 +121,20 @@ namespace AbcDataVisualization
             return new AbcSize(desiredWidth, desiredHeight);
         }
 
-        protected override void LayoutOverride(AbcLayoutContext context)
+        protected override void ArrangeOverride(AbcArrangeContext context)
         {
-            double axisX = context.layoutSlot.x + (this.firstLabel.DesiredMeasure.width / 2);
-            double axisRight = context.layoutSlot.Right() - (this.lastLabel.DesiredMeasure.width / 2);
-            AbcRect axisLineLayoutSlot = new AbcRect(axisX, 0, axisRight - axisX, this.axisLineThickness);
-            this.axisLine.SetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = axisLineLayoutSlot });
+            double axisX = context.arrangeSlot.x + (this.firstLabel.DesiredMeasure.width / 2);
+            double axisRight = context.arrangeSlot.Right() - (this.lastLabel.DesiredMeasure.width / 2);
+            AbcRect axisLineArrangeSlot = new AbcRect(axisX, 0, axisRight - axisX, this.axisLineThickness);
+            this.axisLine.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = axisLineArrangeSlot });
             
-            AbcRect firstLabelLayoutSlot = new AbcRect(0, axisLineLayoutSlot.Bottom(), this.firstLabel.DesiredMeasure.width, this.firstLabel.DesiredMeasure.height);
-            this.firstLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = firstLabelLayoutSlot });
+            AbcRect firstLabelArrangeSlot = new AbcRect(0, axisLineArrangeSlot.Bottom(), this.firstLabel.DesiredMeasure.width, this.firstLabel.DesiredMeasure.height);
+            this.firstLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = firstLabelArrangeSlot });
 
-            AbcRect lastLabelLayoutSlot = new AbcRect(axisLineLayoutSlot.Right() - this.lastLabel.DesiredMeasure.width, axisLineLayoutSlot.Bottom(), this.lastLabel.DesiredMeasure.width, this.lastLabel.DesiredMeasure.height);
-            this.lastLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelLayoutSlot });
+            AbcRect lastLabelArrangeSlot = new AbcRect(axisLineArrangeSlot.Right() - this.lastLabel.DesiredMeasure.width, axisLineArrangeSlot.Bottom(), this.lastLabel.DesiredMeasure.width, this.lastLabel.DesiredMeasure.height);
+            this.lastLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelArrangeSlot });
 
-            base.LayoutOverride(context);
+            base.ArrangeOverride(context);
         }
 
         private void UpdateLabelsFontSize()

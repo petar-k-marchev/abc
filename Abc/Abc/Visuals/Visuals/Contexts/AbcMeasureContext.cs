@@ -2,7 +2,7 @@
 
 namespace Abc.Visuals
 {
-    internal class AbcMeasureContext : AbcMLContext
+    internal class AbcMeasureContext : AbcContextBase
     {
         internal AbcSize availableSize;
 

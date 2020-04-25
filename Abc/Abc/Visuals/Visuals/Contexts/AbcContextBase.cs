@@ -1,12 +1,12 @@
 ﻿namespace Abc.Visuals
 {
-    internal abstract class AbcMLContext
+    internal abstract class AbcContextBase
     {
-        private readonly AbcMLContext owner;
+        private readonly AbcContextBase owner;
 
         private AbcBag bag;
 
-        internal AbcMLContext(AbcMLContext owner = null)
+        internal AbcContextBase(AbcContextBase owner = null)
         {
             this.owner = owner;
         }
