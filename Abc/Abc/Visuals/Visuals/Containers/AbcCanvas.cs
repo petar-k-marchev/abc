@@ -8,7 +8,7 @@ namespace Abc.Visuals
         {
             base.ArrangeOverride(context);
             
-            foreach (AbcVisual child in this.Children)
+            foreach (IAbcVisual child in this.Children)
             {
                 AbcContextualPropertyValue arrangeSlotPropertyValue = child.GetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey);
                 context.arrangeSlot = arrangeSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)arrangeSlotPropertyValue).value : AbcRect.Empty;

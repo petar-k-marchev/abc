@@ -19,14 +19,23 @@ namespace WpfControls.DataVisualization
 
         public WpfNumericAxis()
         {
-            if (true)
+            // WpfVisualTree
+            // WpfDrawingVisualTree
+            // WpfVisualTree2
+            string test = nameof(WpfVisualTree);
+
+            if (test == "WpfVisualTree")
             {
                 this.visualTree = new WpfVisualTree();
             }
-            else
+            else if (test == "WpfDrawingVisualTree")
             {
                 this.visualTree = new WpfDrawingVisualTree();
                 this.visualTree.NativeRoot = this;
+            }
+            else if (test == "WpfVisualTree2")
+            {
+                this.visualTree = new WpfVisualTree2();
             }
 
             this.abcNumericAxis = new AbcNumericAxis();
@@ -42,6 +51,12 @@ namespace WpfControls.DataVisualization
             base.OnApplyTemplate();
 
             if (this.visualTree is WpfVisualTree)
+            {
+                Canvas numericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
+                this.visualTree.NativeRoot = numericAxisCanvas;
+            }
+
+            if (this.visualTree is WpfVisualTree2)
             {
                 Canvas numericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
                 this.visualTree.NativeRoot = numericAxisCanvas;
@@ -67,6 +82,12 @@ namespace WpfControls.DataVisualization
                 this.abcNumericAxis.Arrange(context);
             }
 
+            if (this.visualTree is WpfVisualTree2)
+            {
+                AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, arrangeBounds.Width, arrangeBounds.Height));
+                this.abcNumericAxis.Arrange(context);
+            }
+
             return arrangedSize;
         }
 
@@ -80,10 +101,14 @@ namespace WpfControls.DataVisualization
                 // we can skip notifying axis (for testing purposes mainly)
                 // now we must expect for visual-tree-part to let the engine know there is a measure invalidated
             }
+            else if (this.visualTree is WpfVisualTree2)
+            {
+                // font size propagates automatically to visuals
+                // we can skip notifying axis (for testing purposes mainly)
+                // now we must expect for visual-tree-part to let the engine know there is a measure invalidated
+            }
             else
             {
-
-
                 if (e.Property == FontSizeProperty)
                 {
                     this.abcNumericAxis.FontSize = this.FontSize;

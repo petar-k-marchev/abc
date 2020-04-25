@@ -21,8 +21,21 @@ namespace WpfControls.WpfVisualTreeInternals
 
         double IAbcLabel.FontSize
         {
-            get { return this.textBlock.FontSize; }
-            set { this.textBlock.FontSize = value; }
+            get
+            {
+                return this.textBlock.FontSize;
+            }
+            set
+            {
+                if (value > 0)
+                {
+                    this.textBlock.FontSize = value;
+                }
+                else
+                {
+                    this.textBlock.ClearValue(TextBlock.FontSizeProperty);
+                }
+            }
         }
     }
 }

@@ -177,7 +177,7 @@ namespace WpfControls.WpfVisualTreeInternals
 
         private void RemoveFromParent(IAbcVisual oldVisualParent)
         {
-            if (oldVisualParent != null)
+            if (oldVisualParent == null)
             {
                 return;
             }
