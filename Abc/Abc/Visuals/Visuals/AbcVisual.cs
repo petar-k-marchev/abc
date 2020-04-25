@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Abc.Visuals
 {
-    internal abstract class AbcVisual
+    internal abstract class AbcVisual : IAbcVisual
     {
         private AbcVisual visualParent;
         private NativeVisualTree visualTree;
@@ -16,7 +16,7 @@ namespace Abc.Visuals
         private AbcRect layoutSlot;
         private bool isLayoutValid;
 
-        internal event EventHandler<ContextualPropertyValueChangedEventArgs> ContextualPropertyValueChanged;
+        public event EventHandler<AbcContextualPropertyValueChangedEventArgs> ContextualPropertyValueChanged;
 
         //// Tips for woking with visual tree and visual parent.
         //// No automatic propagation for the visual tree.
@@ -26,7 +26,7 @@ namespace Abc.Visuals
         //// or
         ////    B) You want to remove the visual (and discard all native bits) from the visual tree.
 
-        internal AbcVisual VisualParent
+        public AbcVisual VisualParent
         {
             get
             {
@@ -50,7 +50,7 @@ namespace Abc.Visuals
             }
         }
 
-        internal NativeVisualTree VisualTree
+        public NativeVisualTree VisualTree
         {
             get
             {
@@ -69,7 +69,7 @@ namespace Abc.Visuals
             }
         }
 
-        internal AbcSize DesiredMeasure
+        public AbcSize DesiredMeasure
         {
             get
             {
@@ -77,7 +77,7 @@ namespace Abc.Visuals
             }
         }
 
-        internal AbcRect LayoutSlot
+        public AbcRect LayoutSlot
         {
             get
             {
@@ -121,7 +121,7 @@ namespace Abc.Visuals
             }
         }
 
-        internal void Measure(AbcMeasureContext context)
+        public void Measure(AbcMeasureContext context)
         {
             if (this.isMeasureValid)
             {
@@ -134,7 +134,7 @@ namespace Abc.Visuals
             this.isMeasureValid = true;
         }
 
-        internal void Layout(AbcLayoutContext context)
+        public void Layout(AbcLayoutContext context)
         {
             if (this.isLayoutValid)
             {
@@ -153,7 +153,7 @@ namespace Abc.Visuals
             this.isLayoutValid = true;
         }
 
-        internal AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)
+        public AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)
         {
             AbcContextualPropertyValue propertyValue = null;
 
@@ -163,14 +163,14 @@ namespace Abc.Visuals
             return propertyValue;
         }
 
-        internal void SetContextualPropertyValue(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue propertyValue)
+        public void SetContextualPropertyValue(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue propertyValue)
         {
             if (this.contextualProperties == null)
             {
                 this.contextualProperties = new Dictionary<int, AbcContextualPropertyValue>();
             }
 
-            EventHandler<ContextualPropertyValueChangedEventArgs> propertyChanged = this.ContextualPropertyValueChanged;
+            EventHandler<AbcContextualPropertyValueChangedEventArgs> propertyChanged = this.ContextualPropertyValueChanged;
             AbcContextualPropertyValue oldPropertyValue = null;
             if (propertyChanged != null)
             {
@@ -181,7 +181,7 @@ namespace Abc.Visuals
 
             if (propertyChanged != null)
             {
-                propertyChanged(this, new ContextualPropertyValueChangedEventArgs(propertyKey, oldPropertyValue, propertyValue));
+                propertyChanged(this, new AbcContextualPropertyValueChangedEventArgs(propertyKey, oldPropertyValue, propertyValue));
             }
         }
 
@@ -190,20 +190,6 @@ namespace Abc.Visuals
             if (this.isMeasureValid)
             {
                 bool affectsMeasure = flag == AbcVisualFlag.AffectsMeasureOnly || flag == AbcVisualFlag.AffectsMeasureAndLayout;
-            }
-        }
-
-        internal struct ContextualPropertyValueChangedEventArgs
-        {
-            internal readonly AbcContextualPropertyKey propertyKey;
-            internal readonly AbcContextualPropertyValue oldPropertyValue;
-            internal readonly AbcContextualPropertyValue newPropertyValue;
-
-            public ContextualPropertyValueChangedEventArgs(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue oldPropertyValue, AbcContextualPropertyValue newPropertyValue)
-            {
-                this.propertyKey = propertyKey;
-                this.oldPropertyValue = oldPropertyValue;
-                this.newPropertyValue = newPropertyValue;
             }
         }
     }

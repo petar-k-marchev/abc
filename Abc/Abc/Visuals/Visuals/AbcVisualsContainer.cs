@@ -2,18 +2,18 @@
 
 namespace Abc.Visuals
 {
-    internal abstract class AbcVisualsContainer : AbcVisual
+    internal abstract class AbcVisualsContainer : AbcVisual, IAbcVisualsContainer
     {
-        internal readonly ObservableItemCollection<AbcVisual> children;
-
         internal AbcVisualsContainer()
         {
-            this.children = new ObservableItemCollection<AbcVisual>();
-            this.children.ItemAdded += this.Children_ItemAdded;
-            this.children.ItemRemoved += this.Children_ItemRemoved;
+            this.Children = new ObservableItemCollection<IAbcVisual>();
+            this.Children.ItemAdded += this.Children_ItemAdded;
+            this.Children.ItemRemoved += this.Children_ItemRemoved;
         }
 
-        private void Children_ItemAdded(object sender, ObservableItemCollectionChangedEventArgs<AbcVisual> e)
+        public ObservableItemCollection<IAbcVisual> Children { get; }
+
+        private void Children_ItemAdded(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> e)
         {
             e.Item.VisualParent = this;
 
@@ -23,7 +23,7 @@ namespace Abc.Visuals
             }
         }
 
-        private void Children_ItemRemoved(object sender, ObservableItemCollectionChangedEventArgs<AbcVisual> e)
+        private void Children_ItemRemoved(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> e)
         {
             e.Item.VisualParent = null;
 
@@ -34,7 +34,7 @@ namespace Abc.Visuals
         {
             base.OnVisualTreeChanged(oldVisualTree);
 
-            foreach (AbcVisual child in this.children)
+            foreach (AbcVisual child in this.Children)
             {
                 child.VisualTree = this.VisualTree;
             }

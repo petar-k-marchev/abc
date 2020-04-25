@@ -36,7 +36,27 @@ namespace Abc
 
         internal virtual AbcVisual CreateVisual(Type type)
         {
-            return (AbcVisual)Activator.CreateInstance(type);
+            if (type == typeof(IAbcLabel))
+            {
+                return new AbcLabel();
+            }
+
+            if (type == typeof(IAbcRectangle))
+            {
+                return new AbcRectangle();
+            }
+
+            if (type == typeof(IAbcCanvas))
+            {
+                return new AbcCanvas();
+            }
+
+            if (type == typeof(IAbcStack))
+            {
+                return new AbcStack();
+            }
+
+            throw new Exception();
         }
 
         internal virtual void OnAbcRootChanging(AbcVisual newAbcRoot)

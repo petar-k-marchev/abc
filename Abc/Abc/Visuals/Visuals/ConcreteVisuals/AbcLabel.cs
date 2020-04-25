@@ -2,22 +2,15 @@
 
 namespace Abc.Visuals
 {
-    internal class AbcLabel : AbcVisual
+    internal class AbcLabel : AbcVisual, IAbcLabel
     {
         private string text;
-
-        public AbcLabel()
-        {
-            this.FontSize2 = new AbcProperty<double>(this, AbcVisualFlag.AffectsMeasureAndLayout);
-        }
+        private double fontSize = -1;
 
         internal event EventHandler TextChanged;
+        internal event EventHandler FontSizeChanged;
 
-        internal AbcProperty.DoubleWithDefault FontSize { get; } = new AbcProperty.DoubleWithDefault(double.NaN);
-
-        internal AbcProperty<double> FontSize2 { get; }
-
-        internal string Text
+        public string Text
         {
             get
             {
@@ -30,6 +23,23 @@ namespace Abc.Visuals
                     this.text = value;
                     this.AddFlag(AbcVisualFlag.AffectsLayoutAndMaybeMeasure);
                     this.TextChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
+        public double FontSize
+        {
+            get
+            {
+                return this.fontSize;
+            }
+            set
+            {
+                if (this.fontSize != value)
+                {
+                    this.fontSize = value;
+                    this.AddFlag(AbcVisualFlag.AffectsMeasureAndLayout);
+                    this.FontSizeChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }

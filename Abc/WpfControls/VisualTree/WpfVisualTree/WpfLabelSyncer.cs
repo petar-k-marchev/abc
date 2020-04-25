@@ -22,11 +22,9 @@ namespace WpfControls.WpfVisualTreeInternals
 
             this.nativeTextBlock.Text = abcLabel.Text;
             this.UpdateFontSize();
-            this.UpdateFontSize2();
 
             abcLabel.TextChanged += this.AbcLabel_TextChanged;
-            abcLabel.FontSize.Changed += this.AbcLabel_FontSizeChanged;
-            abcLabel.FontSize2.Changed += this.FontSize2_Changed;
+            abcLabel.FontSizeChanged += this.AbcLabel_FontSizeChanged;
         }
 
         internal override void StopSync()
@@ -36,8 +34,7 @@ namespace WpfControls.WpfVisualTreeInternals
             AbcLabel abcLabel = (AbcLabel)this.abcVisual;
 
             abcLabel.TextChanged -= this.AbcLabel_TextChanged;
-            abcLabel.FontSize.Changed -= this.AbcLabel_FontSizeChanged;
-            abcLabel.FontSize2.Changed -= this.FontSize2_Changed;
+            abcLabel.FontSizeChanged -= this.AbcLabel_FontSizeChanged;
         }
 
         private void AbcLabel_TextChanged(object sender, System.EventArgs e)
@@ -51,32 +48,14 @@ namespace WpfControls.WpfVisualTreeInternals
             this.UpdateFontSize();
         }
 
-        private void FontSize2_Changed(object sender, AbcProperty<double>.AbcPropertyChangedEventArgs e)
-        {
-            this.UpdateFontSize2();
-        }
-
         private void UpdateFontSize()
         {
             AbcLabel abcLabel = (AbcLabel)this.abcVisual;
+            double fontSize = abcLabel.FontSize;
 
-            if (abcLabel.FontSize.Value > 0 && !abcLabel.FontSize.IsDefault)
+            if (fontSize > 0)
             {
-                this.nativeTextBlock.FontSize = abcLabel.FontSize.Value;
-            }
-            else
-            {
-                this.nativeTextBlock.ClearValue(TextBlock.FontSizeProperty);
-            }
-        }
-
-        private void UpdateFontSize2()
-        {
-            AbcLabel abcLabel = (AbcLabel)this.abcVisual;
-
-            if (abcLabel.FontSize2.Value > 0)
-            {
-                this.nativeTextBlock.FontSize = abcLabel.FontSize2.Value;
+                this.nativeTextBlock.FontSize = fontSize;
             }
             else
             {

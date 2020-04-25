@@ -2,11 +2,11 @@
 
 namespace Abc.Visuals
 {
-    internal class AbcStack : AbcVisualsContainer
+    internal class AbcStack : AbcVisualsContainer, IAbcStack
     {
         protected override AbcSize MeasureOverride(AbcMeasureContext context)
         {
-            if (this.children.Count == 0)
+            if (this.Children.Count == 0)
             {
                 return new AbcSize();
             }
@@ -14,7 +14,7 @@ namespace Abc.Visuals
             double desiredWidth = 0;
             double desiredHeight = 0;
 
-            foreach (AbcVisual child in this.children)
+            foreach (AbcVisual child in this.Children)
             {
                 child.Measure(context);
 

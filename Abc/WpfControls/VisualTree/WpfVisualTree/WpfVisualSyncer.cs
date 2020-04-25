@@ -30,14 +30,14 @@ namespace WpfControls.WpfVisualTreeInternals
         {
             base.StartSync();
 
-            this.UpdateLayoutSlot(this.abcVisual.GetContextualPropertyValue(AbcCanvas.LayoutSlotPropertyKey));
+            this.UpdateLayoutSlot(this.abcVisual.GetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey));
         }
 
-        internal override void OnContextualPropertyValueChanged(AbcVisual.ContextualPropertyValueChangedEventArgs args)
+        internal override void OnContextualPropertyValueChanged(AbcContextualPropertyValueChangedEventArgs args)
         {
             base.OnContextualPropertyValueChanged(args);
 
-            if (args.propertyKey == AbcCanvas.LayoutSlotPropertyKey)
+            if (args.propertyKey == AbcCanvasContextualProperties.LayoutSlotPropertyKey)
             {
                 this.UpdateLayoutSlot(args.newPropertyValue);
             }

@@ -1,6 +1,6 @@
 ﻿namespace Abc.Visuals
 {
-    internal class AbcRectangle : AbcVisual
+    internal class AbcRectangle : AbcVisual, IAbcRectangle
     {
     }
 }

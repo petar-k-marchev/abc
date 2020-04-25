@@ -74,7 +74,7 @@ namespace WpfControls
             }
         }
 
-        internal static WpfDrawCommandSyncer GetSyncer(AbcVisual abcVisual)
+        internal static WpfDrawCommandSyncer GetSyncer(IAbcVisual abcVisual)
         {
             if (abcVisual == null)
             {
@@ -150,7 +150,7 @@ namespace WpfControls
                 this.AbcRoot.Layout(context);
 
                 var axis = (AbcDataVisualization.AbcNumericAxis)this.AbcRoot;
-                foreach (var child in axis.children)
+                foreach (var child in axis.Children)
                 {
                     WpfDrawCommandSyncer syncer = GetSyncer(child);
                     if (syncer is WpfLabelSyncer labelSyncer)

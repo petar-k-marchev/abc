@@ -28,8 +28,7 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
 
             AbcLabel abcLabel = (AbcLabel)this.abcVisual;
             abcLabel.TextChanged += this.AbcLabel_TextChanged;
-            abcLabel.FontSize.Changed += this.AbcLabel_FontSizeChanged;
-            abcLabel.FontSize2.Changed += this.FontSize2_Changed;
+            abcLabel.FontSizeChanged += this.AbcLabel_FontSizeChanged;
         }
 
         internal override void StopSync()
@@ -38,8 +37,7 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
 
             AbcLabel abcLabel = (AbcLabel)this.abcVisual;
             abcLabel.TextChanged -= this.AbcLabel_TextChanged;
-            abcLabel.FontSize.Changed -= this.AbcLabel_FontSizeChanged;
-            abcLabel.FontSize2.Changed -= this.FontSize2_Changed;
+            abcLabel.FontSizeChanged -= this.AbcLabel_FontSizeChanged;
 
             this.nativeFormattedText = null;
         }
@@ -48,7 +46,7 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
         {
             this.EnsureFormattedText();
 
-            AbcContextualPropertyValue layoutSlotPropertyValue = this.abcVisual.GetContextualPropertyValue(AbcCanvas.LayoutSlotPropertyKey);
+            AbcContextualPropertyValue layoutSlotPropertyValue = this.abcVisual.GetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey);
             AbcRect layoutSlot = layoutSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)layoutSlotPropertyValue).value : AbcRect.Empty;
 
             Point position = new Point(layoutSlot.x, layoutSlot.y);
@@ -77,7 +75,8 @@ namespace WpfControls.WpfDrawingVisualTreeInternals
                 AbcLabel abcLabel = (AbcLabel)this.abcVisual;
                 Typeface typeface = new Typeface(string.Empty);
                 CultureInfo culture = CultureInfo.CurrentCulture;
-                double emSize = abcLabel.FontSize.Value > 0 ? abcLabel.FontSize.Value : SystemFonts.IconFontSize;
+                double fontSize = abcLabel.FontSize;
+                double emSize = fontSize > 0 ? fontSize : SystemFonts.IconFontSize;
                 Brush foreground = Brushes.Black;
                 this.nativeFormattedText = new FormattedText(abcLabel.Text, culture, FlowDirection.LeftToRight, typeface, emSize, foreground, 1.25);
             }

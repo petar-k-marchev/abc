@@ -18,9 +18,9 @@ namespace AbcDataVisualization
         private double actualMax;
         private double fontSize;
 
-        private AbcRectangle axisLine;
-        private AbcLabel firstLabel;
-        private AbcLabel lastLabel;
+        private IAbcRectangle axisLine;
+        private IAbcLabel firstLabel;
+        private IAbcLabel lastLabel;
 
         internal double UserMin
         {
@@ -98,15 +98,15 @@ namespace AbcDataVisualization
         {
             if (this.axisLine == null)
             {
-                this.axisLine = (AbcRectangle)this.VisualTree.CreateVisual(typeof(AbcRectangle));
-                this.firstLabel = (AbcLabel)this.VisualTree.CreateVisual(typeof(AbcLabel));
-                this.lastLabel = (AbcLabel)this.VisualTree.CreateVisual(typeof(AbcLabel));
+                this.axisLine = (IAbcRectangle)this.VisualTree.CreateVisual(typeof(IAbcRectangle));
+                this.firstLabel = (IAbcLabel)this.VisualTree.CreateVisual(typeof(IAbcLabel));
+                this.lastLabel = (IAbcLabel)this.VisualTree.CreateVisual(typeof(IAbcLabel));
                 
                 this.UpdateLabelsFontSize();
                 
-                this.children.Add(this.axisLine);
-                this.children.Add(this.firstLabel);
-                this.children.Add(this.lastLabel);
+                this.Children.Add(this.axisLine);
+                this.Children.Add(this.firstLabel);
+                this.Children.Add(this.lastLabel);
             }
 
             this.firstLabel.Text = "" + this.UserMin;
@@ -126,13 +126,13 @@ namespace AbcDataVisualization
             double axisX = context.layoutSlot.x + (this.firstLabel.DesiredMeasure.width / 2);
             double axisRight = context.layoutSlot.Right() - (this.lastLabel.DesiredMeasure.width / 2);
             AbcRect axisLineLayoutSlot = new AbcRect(axisX, 0, axisRight - axisX, this.axisLineThickness);
-            this.axisLine.SetContextualPropertyValue(LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = axisLineLayoutSlot });
+            this.axisLine.SetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = axisLineLayoutSlot });
             
             AbcRect firstLabelLayoutSlot = new AbcRect(0, axisLineLayoutSlot.Bottom(), this.firstLabel.DesiredMeasure.width, this.firstLabel.DesiredMeasure.height);
-            this.firstLabel.SetContextualPropertyValue(LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = firstLabelLayoutSlot });
+            this.firstLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = firstLabelLayoutSlot });
 
             AbcRect lastLabelLayoutSlot = new AbcRect(axisLineLayoutSlot.Right() - this.lastLabel.DesiredMeasure.width, axisLineLayoutSlot.Bottom(), this.lastLabel.DesiredMeasure.width, this.lastLabel.DesiredMeasure.height);
-            this.lastLabel.SetContextualPropertyValue(LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelLayoutSlot });
+            this.lastLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.LayoutSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelLayoutSlot });
 
             base.LayoutOverride(context);
         }
@@ -141,8 +141,7 @@ namespace AbcDataVisualization
         {
             if (this.axisLine != null)
             {
-                this.firstLabel.FontSize.Value = this.FontSize;
-                this.lastLabel.FontSize2.Value = this.FontSize;
+                this.firstLabel.FontSize = this.FontSize;
             }
         }
     }

@@ -59,11 +59,11 @@ namespace Abc
             }
         }
 
-        internal virtual void OnContextualPropertyValueChanged(AbcVisual.ContextualPropertyValueChangedEventArgs args)
+        internal virtual void OnContextualPropertyValueChanged(AbcContextualPropertyValueChangedEventArgs args)
         {
         }
 
-        private void AbcVisual_ContextualPropertyValueChanged(object sender, AbcVisual.ContextualPropertyValueChangedEventArgs args)
+        private void AbcVisual_ContextualPropertyValueChanged(object sender, AbcContextualPropertyValueChangedEventArgs args)
         {
             this.OnContextualPropertyValueChanged(args);
         }
