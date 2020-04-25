@@ -6,7 +6,7 @@ namespace Abc.Visuals
 {
     internal abstract class AbcVisual : IAbcVisual
     {
-        private AbcVisual visualParent;
+        private IAbcVisual visualParent;
         private NativeVisualTree visualTree;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
         private bool isMeasurePhase;
@@ -26,7 +26,7 @@ namespace Abc.Visuals
         //// or
         ////    B) You want to remove the visual (and discard all native bits) from the visual tree.
 
-        public AbcVisual VisualParent
+        public IAbcVisual VisualParent
         {
             get
             {
@@ -44,7 +44,7 @@ namespace Abc.Visuals
                     throw new InvalidOperationException(string.Format("Visual is already attached to a {0}.", nameof(VisualParent)));
                 }
 
-                AbcVisual oldVisualParent = this.visualParent;
+                IAbcVisual oldVisualParent = this.visualParent;
                 this.visualParent = value;
                 this.OnVisualParentChanged(oldVisualParent);
             }
@@ -95,7 +95,7 @@ namespace Abc.Visuals
         {
         }
 
-        protected virtual void OnVisualParentChanged(AbcVisual oldVisualParent)
+        protected virtual void OnVisualParentChanged(IAbcVisual oldVisualParent)
         {
             if (this.VisualTree != null)
             {

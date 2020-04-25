@@ -12,17 +12,17 @@ namespace WpfControls
     internal class WpfDrawingVisualTree : WpfVisualTreeBase
     {
         private static readonly AbcContextualPropertyKey SyncerPropertyKey = new AbcContextualPropertyKey();
-        private static readonly Dictionary<Type, Func<AbcVisual, WpfDrawCommandSyncer>> syncerCreator;
+        private static readonly Dictionary<Type, Func<IAbcVisual, WpfDrawCommandSyncer>> syncerCreator;
 
         static WpfDrawingVisualTree()
         {
-            syncerCreator = new Dictionary<Type, Func<AbcVisual, WpfDrawCommandSyncer>>();
-            syncerCreator[typeof(AbcLabel)] = CreateLabelSyncer;
-            syncerCreator[typeof(AbcCanvas)] = CreateCanvasSyncer;
-            syncerCreator[typeof(AbcRectangle)] = CreateRectangleSyncer;
+            syncerCreator = new Dictionary<Type, Func<IAbcVisual, WpfDrawCommandSyncer>>();
+            syncerCreator[typeof(IAbcLabel)] = CreateLabelSyncer;
+            syncerCreator[typeof(IAbcCanvas)] = CreateCanvasSyncer;
+            syncerCreator[typeof(IAbcRectangle)] = CreateRectangleSyncer;
         }
 
-        internal override void AttachToNativeParent(AbcVisual abcVisual)
+        internal override void AttachToNativeParent(IAbcVisual abcVisual)
         {
             if (abcVisual.VisualParent == null)
             {
@@ -33,7 +33,7 @@ namespace WpfControls
             visualSyncer.StartSync();
         }
 
-        internal override void DetachFromNativeParent(AbcVisual abcVisual, AbcVisual oldParent)
+        internal override void DetachFromNativeParent(IAbcVisual abcVisual, IAbcVisual oldParent)
         {
             WpfDrawCommandSyncer visualSyncer = GetSyncer(abcVisual);
 
@@ -44,11 +44,11 @@ namespace WpfControls
             }
         }
 
-        internal override void DetachFromVisualTree(AbcVisual abcVisual)
+        internal override void DetachFromVisualTree(IAbcVisual abcVisual)
         {
         }
 
-        internal override AbcSize Measure(AbcVisual abcVisual, AbcMeasureContext context)
+        internal override AbcSize Measure(IAbcVisual abcVisual, AbcMeasureContext context)
         {
             WpfDrawCommandSyncer visualSyncer = GetSyncer(abcVisual);
             return visualSyncer.Measure(context);
@@ -67,12 +67,12 @@ namespace WpfControls
             return syncer;
         }
 
-        private static void SetSyncer(AbcVisual abcVisual, WpfDrawCommandSyncer syncer)
+        private static void SetSyncer(IAbcVisual abcVisual, WpfDrawCommandSyncer syncer)
         {
             abcVisual.SetContextualPropertyValue(SyncerPropertyKey, new AbcContextualPropertyValue.AbcObject { value = syncer });
         }
 
-        private static WpfDrawCommandSyncer GetOrCreateSyncer(AbcVisual abcVisual)
+        private static WpfDrawCommandSyncer GetOrCreateSyncer(IAbcVisual abcVisual)
         {
             WpfDrawCommandSyncer syncer = GetSyncer(abcVisual);
             if (syncer == null)
@@ -83,10 +83,10 @@ namespace WpfControls
             return syncer;
         }
 
-        private static WpfDrawCommandSyncer CreateSyncer(AbcVisual abcVisual)
+        private static WpfDrawCommandSyncer CreateSyncer(IAbcVisual abcVisual)
         {
             Type abcVisualType = abcVisual.GetType();
-            Func<AbcVisual, WpfDrawCommandSyncer> creator;
+            Func<IAbcVisual, WpfDrawCommandSyncer> creator;
             if (syncerCreator.TryGetValue(abcVisualType, out creator))
             {
                 WpfDrawCommandSyncer syncer = creator(abcVisual);
@@ -95,7 +95,8 @@ namespace WpfControls
 
             foreach (var pair in syncerCreator)
             {
-                if (abcVisualType.IsSubclassOf(pair.Key))
+                if (abcVisualType.IsSubclassOf(pair.Key) || 
+                    abcVisualType.GetInterface(pair.Key.Name) != null)
                 {
                     WpfDrawCommandSyncer syncer = pair.Value(abcVisual);
                     return syncer;
@@ -117,17 +118,17 @@ namespace WpfControls
             }
         }
 
-        private static WpfDrawCommandSyncer CreateLabelSyncer(AbcVisual abcVisual)
+        private static WpfDrawCommandSyncer CreateLabelSyncer(IAbcVisual abcVisual)
         {
             return new WpfLabelSyncer((AbcLabel)abcVisual);
         }
 
-        private static WpfDrawCommandSyncer CreateCanvasSyncer(AbcVisual abcVisual)
+        private static WpfDrawCommandSyncer CreateCanvasSyncer(IAbcVisual abcVisual)
         {
             return new WpfCanvasSyncer((AbcCanvas)abcVisual);
         }
 
-        private static WpfDrawCommandSyncer CreateRectangleSyncer(AbcVisual abcVisual)
+        private static WpfDrawCommandSyncer CreateRectangleSyncer(IAbcVisual abcVisual)
         {
             return new WpfRectangleSyncer((AbcRectangle)abcVisual);
         }
