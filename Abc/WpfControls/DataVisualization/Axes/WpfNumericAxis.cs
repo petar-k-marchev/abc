@@ -4,7 +4,6 @@ using AbcDataVisualization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using WpfControls.WpfDrawingVisualTreeInternals;
 
 namespace WpfControls.DataVisualization
 {
@@ -86,24 +85,11 @@ namespace WpfControls.DataVisualization
         {
             base.OnRender(drawingContext);
 
-            // can draw here directly instead of in visual tree
-
-            if (this.visualTree is WpfDrawingVisualTree)
+            if (this.visualTree is WpfDrawingVisualTree wpfDrawingVisualTree)
             {
                 AbcLayoutContext context = new AbcLayoutContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
                 this.abcNumericAxis.Layout(context);
-
-                // we must render these manually or optimization in engine will not call Layout
-                // seems like Layout needs to be separated - Arrange and Render ?
-
-                foreach (IAbcVisual child in this.abcNumericAxis.Children)
-                {
-                    WpfDrawCommandSyncer syncer = WpfDrawingVisualTree.GetSyncer(child);
-                    if (syncer is WpfLabelSyncer labelSyncer)
-                    {
-                        labelSyncer.OnRender(drawingContext);
-                    }
-                }
+                wpfDrawingVisualTree.Render(drawingContext);
             }
         }
     }

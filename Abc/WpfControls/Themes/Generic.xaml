@@ -10,7 +10,7 @@
                     <Border Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}">
-                        <wpfControls:WpfDrawingCanvas x:Name="PART_Canvas" />
+                        <Canvas x:Name="PART_Canvas" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

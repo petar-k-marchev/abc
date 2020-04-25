@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using WpfControls.WpfDrawingVisualTreeInternals;
 
 namespace WpfControls
@@ -51,27 +52,6 @@ namespace WpfControls
         {
             WpfDrawCommandSyncer visualSyncer = GetSyncer(abcVisual);
             return visualSyncer.Measure(context);
-        }
-
-        internal override void OnNativeRootChanging(UIElement newNativeRoot)
-        {
-            base.OnNativeRootChanging(newNativeRoot);
-            return;
-
-            IDrawingSurface oldDrawingSurface = (IDrawingSurface)this.NativeRoot;
-            IDrawingSurface newDrawingSurface = (IDrawingSurface)newNativeRoot;
-
-            base.OnNativeRootChanging((UIElement)newDrawingSurface);
-
-            if (oldDrawingSurface != null)
-            {
-                oldDrawingSurface.OnRender -= this.DrawingSurface_OnRender;
-            }
-
-            if (newDrawingSurface != null)
-            {
-                newDrawingSurface.OnRender += this.DrawingSurface_OnRender;
-            }
         }
 
         internal static WpfDrawCommandSyncer GetSyncer(IAbcVisual abcVisual)
@@ -125,6 +105,18 @@ namespace WpfControls
             throw new Exception();
         }
 
+        internal void Render(DrawingContext drawingContext)
+        {
+            foreach (IAbcVisual child in ((IAbcCanvas)this.AbcRoot).Children)
+            {
+                WpfDrawCommandSyncer syncer = WpfDrawingVisualTree.GetSyncer(child);
+                if (syncer is WpfLabelSyncer labelSyncer)
+                {
+                    labelSyncer.OnRender(drawingContext);
+                }
+            }
+        }
+
         private static WpfDrawCommandSyncer CreateLabelSyncer(AbcVisual abcVisual)
         {
             return new WpfLabelSyncer((AbcLabel)abcVisual);
@@ -138,31 +130,6 @@ namespace WpfControls
         private static WpfDrawCommandSyncer CreateRectangleSyncer(AbcVisual abcVisual)
         {
             return new WpfRectangleSyncer((AbcRectangle)abcVisual);
-        }
-
-        private void DrawingSurface_OnRender(object sender, System.Windows.Media.DrawingContext dc)
-        {
-            FrameworkElement frameworkElement = (FrameworkElement)sender;
-
-            if (this.AbcRoot != null)
-            {
-                AbcLayoutContext context = new AbcLayoutContext(new AbcRect(0, 0, frameworkElement.ActualWidth, frameworkElement.ActualHeight));
-                this.AbcRoot.Layout(context);
-
-                var axis = (AbcDataVisualization.AbcNumericAxis)this.AbcRoot;
-                foreach (var child in axis.Children)
-                {
-                    WpfDrawCommandSyncer syncer = GetSyncer(child);
-                    if (syncer is WpfLabelSyncer labelSyncer)
-                    {
-                        labelSyncer.OnRender(dc);
-                    }
-                }
-
-                // foreach the abc visuals? and render via syncer?
-                // or inherit each visual and render (in Layout)
-                // or else
-            }
         }
     }
 }
