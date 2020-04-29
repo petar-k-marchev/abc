@@ -38,6 +38,12 @@ namespace WpfControls.WpfVisualTreeInternals
             }
         }
 
+        AbcControlInfo IAbcVisual.ControlInfo
+        {
+            get;
+            set;
+        }
+
         IAbcVisual IAbcVisual.VisualParent
         {
             get
@@ -141,6 +147,15 @@ namespace WpfControls.WpfVisualTreeInternals
 
         void IAbcVisual.Measure(AbcMeasureContext context)
         {
+            IAbcVisual abcVisual = this;
+            if (abcVisual.ControlInfo != null)
+            {
+                if (abcVisual.ControlInfo.controlType == AbcControlType.Slave)
+                {
+                    // i am sleepy now
+                }
+            }
+
             this.uiElement.Measure(new Size(context.availableSize.width, context.availableSize.height));
         }
 
@@ -170,7 +185,26 @@ namespace WpfControls.WpfVisualTreeInternals
                 return;
             }
 
-            WpfVisual wpfVisualParent = (WpfVisual)abcVisualParent;
+            WpfVisual wpfVisualParent = null;
+
+            if (abcVisual.ControlInfo != null)
+            {
+                if (abcVisual.ControlInfo.controlType == AbcControlType.Slave)
+                {
+                    return;
+                }
+                else
+                {
+                    wpfVisualParent = (WpfVisual)abcVisual.ControlInfo.counterpart;
+                }
+                return;
+                wpfVisualParent = (WpfVisual)abcVisual.ControlInfo.counterpart;
+            }
+            else
+            {
+                wpfVisualParent = (WpfVisual)abcVisualParent;
+            }
+
             Panel parentPanel = (Panel)wpfVisualParent.uiElement;
             parentPanel.Children.Add(this.uiElement);
         }

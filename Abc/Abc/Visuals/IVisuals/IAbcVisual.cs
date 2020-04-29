@@ -7,6 +7,8 @@ namespace Abc.Visuals
     {
         event EventHandler<AbcContextualPropertyValueChangedEventArgs> ContextualPropertyValueChanged;
 
+        AbcControlInfo ControlInfo { get; set; }
+
         IAbcVisual VisualParent { get; set; }
 
         NativeVisualTree VisualTree { get; set; }

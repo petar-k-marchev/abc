@@ -26,6 +26,12 @@ namespace Abc.Visuals
         //// or
         ////    B) You want to remove the visual (and discard all native bits) from the visual tree.
 
+        public AbcControlInfo ControlInfo
+        {
+            get;
+            set;
+        }
+
         public IAbcVisual VisualParent
         {
             get
@@ -129,7 +135,25 @@ namespace Abc.Visuals
             }
 
             this.isMeasurePhase = true;
+
+            if (this.ControlInfo != null)
+            {
+                if (this.ControlInfo.controlType == AbcControlType.Master)
+                {
+                    this.ControlInfo.isControlMeasure = true;
+                }
+            }
+
             this.desiredMeasure = this.MeasureOverride(context);
+
+            if (this.ControlInfo != null)
+            {
+                if (this.ControlInfo.controlType == AbcControlType.Master)
+                {
+                    this.ControlInfo.isControlMeasure = false;
+                }
+            }
+
             this.isMeasurePhase = false;
             this.isMeasureValid = true;
         }
@@ -193,5 +217,25 @@ namespace Abc.Visuals
                 bool affectsMeasure = flag == AbcVisualFlag.AffectsMeasureOnly || flag == AbcVisualFlag.AffectsMeasureAndArrange;
             }
         }
+    }
+
+    internal class AbcControlInfo
+    {
+        internal readonly AbcControlType controlType;
+        internal readonly IAbcVisual counterpart;
+
+        internal bool isControlMeasure;
+
+        internal AbcControlInfo(AbcControlType controlType, IAbcVisual counterpart)
+        {
+            this.controlType = controlType;
+            this.counterpart = counterpart;
+        }
+    }
+
+    enum AbcControlType
+    {
+        Master,
+        Slave,
     }
 }

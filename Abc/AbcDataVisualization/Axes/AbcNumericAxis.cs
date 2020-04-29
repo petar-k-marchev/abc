@@ -1,4 +1,5 @@
-﻿using Abc.Primitives;
+﻿using Abc;
+using Abc.Primitives;
 using Abc.Visuals;
 using System;
 
@@ -21,6 +22,8 @@ namespace AbcDataVisualization
         private IAbcRectangle axisLine;
         private IAbcLabel firstLabel;
         private IAbcLabel lastLabel;
+
+        private IAbcCanvas canvas;
 
         internal double UserMin
         {
@@ -96,6 +99,12 @@ namespace AbcDataVisualization
 
         protected override AbcSize MeasureOverride(AbcMeasureContext context)
         {
+            if (this.ControlInfo.isControlMeasure)
+            {
+                this.canvas.Measure(context);
+                return this.canvas.DesiredMeasure;
+            }
+
             if (this.axisLine == null)
             {
                 this.axisLine = (IAbcRectangle)this.VisualTree.CreateVisual(typeof(IAbcRectangle));
@@ -104,9 +113,9 @@ namespace AbcDataVisualization
                 
                 this.UpdateLabelsFontSize();
                 
-                this.Children.Add(this.axisLine);
-                this.Children.Add(this.firstLabel);
-                this.Children.Add(this.lastLabel);
+                this.canvas.Children.Add(this.axisLine);
+                this.canvas.Children.Add(this.firstLabel);
+                this.canvas.Children.Add(this.lastLabel);
             }
 
             this.firstLabel.Text = "" + this.UserMin;
@@ -135,6 +144,51 @@ namespace AbcDataVisualization
             this.lastLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelArrangeSlot });
 
             base.ArrangeOverride(context);
+        }
+
+        protected override void OnVisualTreeChanged(NativeVisualTree oldVisualTree)
+        {
+            base.OnVisualTreeChanged(oldVisualTree);
+
+            if (oldVisualTree != null)
+            {
+                if (oldVisualTree.IsAsd)
+                {
+                    this.Children.Remove(this.canvas);
+                }
+
+                this.canvas.Children.Clear();
+                this.canvas = null;
+                this.axisLine = null;
+                this.firstLabel = null;
+                this.lastLabel = null;
+            }
+
+            if (this.VisualTree != null)
+            {
+                if (this.VisualTree.IsAsd)
+                {
+                    this.canvas = (IAbcCanvas)this.VisualTree.CreateVisual(typeof(IAbcCanvas));
+                    this.ControlInfo = new AbcControlInfo(AbcControlType.Master, this.canvas);
+                    this.canvas.ControlInfo = new AbcControlInfo(AbcControlType.Slave, this);
+                    this.Children.Add(this.canvas);
+                }
+                else
+                {
+                    this.canvas = this;
+                    this.ControlInfo = null;
+                }
+            }
+        }
+
+        protected override void OnVisualParentChanged(IAbcVisual oldVisualParent)
+        {
+            base.OnVisualParentChanged(oldVisualParent);
+
+            if (this.canvas != null)
+            {
+                this.canvas.VisualParent = this.VisualParent;
+            }
         }
 
         private void UpdateLabelsFontSize()

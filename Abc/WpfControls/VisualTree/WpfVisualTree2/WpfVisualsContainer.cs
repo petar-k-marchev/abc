@@ -24,13 +24,25 @@ namespace WpfControls.WpfVisualTreeInternals
         private void Children_ItemAdded(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> args)
         {
             WpfVisual wpfItem = (WpfVisual)args.Item;
-            this.panel.Children.Insert(args.Index, wpfItem.uiElement);
+            //this.panel.Children.Insert(args.Index, wpfItem.uiElement);
+
+            args.Item.VisualParent = this;
+
+            IAbcVisual abcVisual = this;
+            if (abcVisual.VisualTree != null)
+            {
+                args.Item.VisualTree = abcVisual.VisualTree;
+            }
         }
 
         private void Children_ItemRemoved(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> args)
         {
             WpfVisual wpfItem = (WpfVisual)args.Item;
-            this.panel.Children.Remove(wpfItem.uiElement);
+            //this.panel.Children.Remove(wpfItem.uiElement);
+
+            args.Item.VisualParent = null;
+
+            // Deliberately do not diconnect from VisualTree, so virtualization can be more efficient.
         }
     }
 }

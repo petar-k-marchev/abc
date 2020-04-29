@@ -20,6 +20,11 @@ namespace Abc
             this.visualCreator[typeof(IAbcStack)] = CreateStack;
         }
 
+        internal abstract bool IsAsd
+        {
+            get;
+        }
+
         internal IAbcVisual AbcRoot
         {
             get

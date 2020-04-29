@@ -22,6 +22,11 @@ namespace WpfControls
             syncerCreator[typeof(IAbcRectangle)] = CreateRectangleSyncer;
         }
 
+        internal override bool IsAsd
+        {
+            get { return false; }
+        }
+
         internal override void AttachToNativeParent(IAbcVisual abcVisual)
         {
             if (abcVisual.VisualParent == null)

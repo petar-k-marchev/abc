@@ -22,7 +22,7 @@ namespace WpfControls.DataVisualization
             // WpfVisualTree
             // WpfDrawingVisualTree
             // WpfVisualTree2
-            string test = nameof(WpfVisualTree);
+            string test = nameof(WpfVisualTree2);
 
             if (test == "WpfVisualTree")
             {

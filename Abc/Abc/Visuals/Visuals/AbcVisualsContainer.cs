@@ -13,19 +13,19 @@ namespace Abc.Visuals
 
         public ObservableItemCollection<IAbcVisual> Children { get; }
 
-        private void Children_ItemAdded(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> e)
+        private void Children_ItemAdded(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> args)
         {
-            e.Item.VisualParent = this;
+            args.Item.VisualParent = this;
 
             if (this.VisualTree != null)
             {
-                e.Item.VisualTree = this.VisualTree;
+                args.Item.VisualTree = this.VisualTree;
             }
         }
 
-        private void Children_ItemRemoved(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> e)
+        private void Children_ItemRemoved(object sender, ObservableItemCollectionChangedEventArgs<IAbcVisual> args)
         {
-            e.Item.VisualParent = null;
+            args.Item.VisualParent = null;
 
             // Deliberately do not diconnect from VisualTree, so virtualization can be more efficient.
         }

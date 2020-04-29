@@ -17,6 +17,11 @@ namespace WpfControls
             this.visualCreator[typeof(IAbcCanvas)] = CreateCanvas;
         }
 
+        internal override bool IsAsd
+        {
+            get { return true; }
+        }
+
         internal override void AttachToNativeParent(IAbcVisual abcVisual)
         {
             throw new Exception();
