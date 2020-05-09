@@ -78,7 +78,9 @@ namespace WpfControls.WpfVisualTreeInternals
             {
                 if (this.visualTree == value)
                 {
-                    throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(IAbcVisual.VisualTree)));
+                    //temporary disable while testing IAbcControl
+                    //throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(IAbcVisual.VisualTree)));
+                    return;
                 }
 
                 NativeVisualTree oldVisualTree = this.visualTree;

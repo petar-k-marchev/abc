@@ -82,7 +82,7 @@ namespace WpfControls
             
             Panel nativeRoot = (Canvas)this.NativeRoot;
             MasterControlInfo masterControlInfo = (MasterControlInfo)this.AbcRoot.ControlInfo;
-            WpfVisual abcRootVisual = (WpfVisual)masterControlInfo.slave;
+            WpfVisual abcRootVisual = (WpfVisual)(masterControlInfo?.slave ?? this.AbcRoot);
             nativeRoot.Children.Add(abcRootVisual.uiElement);
         }
 
@@ -96,7 +96,7 @@ namespace WpfControls
             
             Panel nativeRoot = (Canvas)this.NativeRoot;
             MasterControlInfo masterControlInfo = (MasterControlInfo)this.AbcRoot.ControlInfo;
-            WpfVisual abcRootVisual = (WpfVisual)masterControlInfo.slave;
+            WpfVisual abcRootVisual = (WpfVisual)(masterControlInfo?.slave ?? this.AbcRoot);
             nativeRoot.Children.Remove(abcRootVisual.uiElement);
         }
     }
