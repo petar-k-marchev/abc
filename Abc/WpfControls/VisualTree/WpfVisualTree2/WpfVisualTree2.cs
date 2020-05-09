@@ -1,7 +1,6 @@
 ﻿using Abc.Primitives;
 using Abc.Visuals;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using WpfControls.WpfVisualTreeInternals;
@@ -17,7 +16,7 @@ namespace WpfControls
             this.visualCreator[typeof(IAbcCanvas)] = CreateCanvas;
         }
 
-        internal override bool IsAsd
+        internal override bool IsMasterSlaveTypeOfVisualTree
         {
             get { return true; }
         }
@@ -80,24 +79,25 @@ namespace WpfControls
             {
                 return;
             }
-
-            //WpfVisualSyncer visualSyncer = GetOrCreateSyncer(this.AbcRoot);
-            //AddVisualToParent(visualSyncer.nativeVisual, this.NativeRoot);
+            
+            Panel nativeRoot = (Canvas)this.NativeRoot;
+            MasterControlInfo masterControlInfo = (MasterControlInfo)this.AbcRoot.ControlInfo;
+            WpfVisual abcRootVisual = (WpfVisual)masterControlInfo.slave;
+            nativeRoot.Children.Add(abcRootVisual.uiElement);
         }
 
         private void DiffuseRoots()
         {
-            //if (this.AbcRoot == null ||
-            //    this.NativeRoot == null)
-            //{
-            //    return;
-            //}
-
-            //WpfVisualSyncer visualSyncer = GetSyncer(this.AbcRoot);
-            //if (visualSyncer != null)
-            //{
-            //    RemoveVisualFromParent(visualSyncer.nativeVisual, this.NativeRoot);
-            //}
+            if (this.AbcRoot == null ||
+                this.NativeRoot == null)
+            {
+                return;
+            }
+            
+            Panel nativeRoot = (Canvas)this.NativeRoot;
+            MasterControlInfo masterControlInfo = (MasterControlInfo)this.AbcRoot.ControlInfo;
+            WpfVisual abcRootVisual = (WpfVisual)masterControlInfo.slave;
+            nativeRoot.Children.Remove(abcRootVisual.uiElement);
         }
     }
 }

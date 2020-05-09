@@ -21,7 +21,7 @@ namespace WpfControls
             syncerCreator[typeof(AbcRectangle)] = CreateRectangleSyncer;
         }
 
-        internal override bool IsAsd
+        internal override bool IsMasterSlaveTypeOfVisualTree
         {
             get { return false; }
         }

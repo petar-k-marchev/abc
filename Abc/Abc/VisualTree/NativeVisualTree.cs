@@ -20,7 +20,7 @@ namespace Abc
             this.visualCreator[typeof(IAbcStack)] = CreateStack;
         }
 
-        internal abstract bool IsAsd
+        internal abstract bool IsMasterSlaveTypeOfVisualTree
         {
             get;
         }

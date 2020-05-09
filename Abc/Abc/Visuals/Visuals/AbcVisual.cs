@@ -136,23 +136,7 @@ namespace Abc.Visuals
 
             this.isMeasurePhase = true;
 
-            if (this.ControlInfo != null)
-            {
-                if (this.ControlInfo.controlType == AbcControlType.Master)
-                {
-                    this.ControlInfo.isControlMeasure = true;
-                }
-            }
-
             this.desiredMeasure = this.MeasureOverride(context);
-
-            if (this.ControlInfo != null)
-            {
-                if (this.ControlInfo.controlType == AbcControlType.Master)
-                {
-                    this.ControlInfo.isControlMeasure = false;
-                }
-            }
 
             this.isMeasurePhase = false;
             this.isMeasureValid = true;
@@ -219,18 +203,22 @@ namespace Abc.Visuals
         }
     }
 
-    internal class AbcControlInfo
+    internal abstract class AbcControlInfo
     {
-        internal readonly AbcControlType controlType;
-        internal readonly IAbcVisual counterpart;
+    }
 
-        internal bool isControlMeasure;
+    internal class MasterControlInfo : AbcControlInfo
+    {
+        internal readonly IAbcCanvas slave;
 
-        internal AbcControlInfo(AbcControlType controlType, IAbcVisual counterpart)
+        internal MasterControlInfo(IAbcCanvas slave)
         {
-            this.controlType = controlType;
-            this.counterpart = counterpart;
+            this.slave = slave;
         }
+    }
+
+    internal class SlaveControlInfo : AbcControlInfo
+    {
     }
 
     enum AbcControlType

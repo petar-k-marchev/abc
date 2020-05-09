@@ -99,12 +99,6 @@ namespace AbcDataVisualization
 
         protected override AbcSize MeasureOverride(AbcMeasureContext context)
         {
-            if (this.ControlInfo.isControlMeasure)
-            {
-                this.canvas.Measure(context);
-                return this.canvas.DesiredMeasure;
-            }
-
             if (this.axisLine == null)
             {
                 this.axisLine = (IAbcRectangle)this.VisualTree.CreateVisual(typeof(IAbcRectangle));
@@ -152,12 +146,19 @@ namespace AbcDataVisualization
 
             if (oldVisualTree != null)
             {
-                if (oldVisualTree.IsAsd)
+                if (oldVisualTree.IsMasterSlaveTypeOfVisualTree)
                 {
                     this.Children.Remove(this.canvas);
                 }
 
                 this.canvas.Children.Clear();
+
+                if (oldVisualTree.IsMasterSlaveTypeOfVisualTree)
+                {
+                    this.ControlInfo = null;
+                    this.canvas.ControlInfo = null;
+                }
+
                 this.canvas = null;
                 this.axisLine = null;
                 this.firstLabel = null;
@@ -166,17 +167,16 @@ namespace AbcDataVisualization
 
             if (this.VisualTree != null)
             {
-                if (this.VisualTree.IsAsd)
+                if (this.VisualTree.IsMasterSlaveTypeOfVisualTree)
                 {
                     this.canvas = (IAbcCanvas)this.VisualTree.CreateVisual(typeof(IAbcCanvas));
-                    this.ControlInfo = new AbcControlInfo(AbcControlType.Master, this.canvas);
-                    this.canvas.ControlInfo = new AbcControlInfo(AbcControlType.Slave, this);
+                    this.ControlInfo = new MasterControlInfo(this.canvas);
+                    this.canvas.ControlInfo = new SlaveControlInfo();
                     this.Children.Add(this.canvas);
                 }
                 else
                 {
                     this.canvas = this;
-                    this.ControlInfo = null;
                 }
             }
         }
