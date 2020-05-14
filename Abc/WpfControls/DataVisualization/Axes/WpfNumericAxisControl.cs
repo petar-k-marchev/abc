@@ -12,6 +12,7 @@ namespace WpfControls.DataVisualization
     {
         private readonly AbcNumericAxisControl abcNumericAxis;
         private readonly AbcVisualTree visualTree;
+        private Canvas numericAxisCanvas;
 
         static WpfNumericAxisControl()
         {
@@ -20,8 +21,6 @@ namespace WpfControls.DataVisualization
 
         public WpfNumericAxisControl()
         {
-            // WpfVisualTree2
-            // WpfDrawingVisualTree2
             string test = nameof(WpfRenderingVisualTree);
 
             if (test == nameof(WpfVisualTree))
@@ -35,10 +34,36 @@ namespace WpfControls.DataVisualization
 
             this.abcNumericAxis = new AbcNumericAxisControl();
             this.abcNumericAxis.VisualTree = this.visualTree;
-
             this.abcNumericAxis.UserMin = 0;
             this.abcNumericAxis.UserMax = 100;
             this.abcNumericAxis.UserStep = 25;
+        }
+
+        private Canvas NumericAxisCanvas
+        {
+            get
+            {
+                return this.numericAxisCanvas;
+            }
+            set
+            {
+                if (this.numericAxisCanvas != value)
+                {
+                    if (this.numericAxisCanvas != null)
+                    {
+                        WpfVisual wpfVisual = (WpfVisual)this.abcNumericAxis.Root;
+                        this.numericAxisCanvas.Children.Remove(wpfVisual.uiElement);
+                    }
+
+                    this.numericAxisCanvas = value;
+
+                    if (this.numericAxisCanvas != null)
+                    {
+                        WpfVisual wpfVisual = (WpfVisual)this.abcNumericAxis.Root;
+                        this.numericAxisCanvas.Children.Add(wpfVisual.uiElement);
+                    }
+                }
+            }
         }
 
         public override void OnApplyTemplate()
@@ -47,9 +72,7 @@ namespace WpfControls.DataVisualization
 
             if (this.visualTree is WpfVisualTree)
             {
-                Canvas numericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
-                WpfVisual wpfVisual = (WpfVisual)this.abcNumericAxis.Root;
-                numericAxisCanvas.Children.Add(wpfVisual.uiElement);
+                this.NumericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
             }
         }
 
@@ -95,9 +118,12 @@ namespace WpfControls.DataVisualization
         {
             base.OnRender(drawingContext);
 
-            AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
-            context.Bag.SetBagObject(WpfRenderingVisualTree.DrawingContextIdentifier, drawingContext);
-            this.abcNumericAxis.Paint(context);
+            if (this.visualTree is WpfRenderingVisualTree)
+            {
+                AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
+                context.Bag.SetBagObject(WpfRenderingVisualTree.DrawingContextIdentifier, drawingContext);
+                this.abcNumericAxis.Paint(context);
+            }
         }
     }
 }
