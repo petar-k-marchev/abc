@@ -178,7 +178,7 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         internal void InvalidateMeasure()
         {
-            if (!this.isMeasureValid)
+            if (this.isMeasureValid)
             {
                 this.isMeasureValid = false;
                 this.InvalidateMeasureOverride();
@@ -189,7 +189,7 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         internal void InvalidateArrange()
         {
-            if (!this.isArrangeValid)
+            if (this.isArrangeValid)
             {
                 this.isArrangeValid = false;
                 this.InvalidateArrangeOverride();
@@ -199,7 +199,7 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         internal void InvalidatePaint()
         {
-            if (!this.isPaintValid)
+            if (this.isPaintValid)
             {
                 this.isPaintValid = false;
                 this.InvalidatePaintOverride();
