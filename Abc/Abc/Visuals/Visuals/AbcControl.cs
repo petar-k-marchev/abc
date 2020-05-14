@@ -13,6 +13,7 @@ namespace Abc.Visuals
         private bool isArrangePhase;
         private AbcRect arrangeSlot;
         private bool isArrangeValid;
+        private bool isPaintPhase;
 
         public IAbcVisual ControlRoot
         {
@@ -61,6 +62,8 @@ namespace Abc.Visuals
 
         protected abstract void ArrangeOverride(AbcArrangeContext context);
 
+        protected abstract void PaintOverride(AbcContextBase context);
+
         protected virtual void OnVisualTreeChanged(NativeVisualTree oldVisualTree)
         {
             this.UpdateControlRootVisualTree();
@@ -107,6 +110,13 @@ namespace Abc.Visuals
             context.arrangeSlot = this.arrangeSlot;
             this.isArrangePhase = false;
             this.isArrangeValid = true;
+        }
+
+        public void Paint(AbcContextBase context)
+        {
+            this.isPaintPhase = true;
+            this.PaintOverride(context);
+            this.isPaintPhase = false;
         }
 
         internal void AddFlag(AbcVisualFlag flag)

@@ -1,6 +1,6 @@
 ﻿namespace Abc.Visuals
 {
-    internal abstract class AbcContextBase
+    internal class AbcContextBase
     {
         private readonly AbcContextBase owner;
 

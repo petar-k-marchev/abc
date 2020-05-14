@@ -15,6 +15,7 @@ namespace Abc.Visuals
         private bool isArrangePhase;
         private AbcRect arrangeSlot;
         private bool isArrangeValid;
+        private bool isPaintPhase;
 
         public event EventHandler<AbcContextualPropertyValueChangedEventArgs> ContextualPropertyValueChanged;
 
@@ -103,6 +104,10 @@ namespace Abc.Visuals
         {
         }
 
+        protected virtual void PaintOverride(AbcContextBase context)
+        {
+        }
+
         protected virtual void OnVisualParentChanged(IAbcVisual oldVisualParent)
         {
             if (this.VisualTree != null)
@@ -162,6 +167,13 @@ namespace Abc.Visuals
             context.arrangeSlot = this.arrangeSlot;
             this.isArrangePhase = false;
             this.isArrangeValid = true;
+        }
+
+        public void Paint(AbcContextBase context)
+        {
+            this.isPaintPhase = true;
+            this.PaintOverride(context);
+            this.isPaintPhase = false;
         }
 
         public AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)

@@ -43,6 +43,11 @@ namespace Abc.Visuals
             }
         }
 
+        internal void SetBagObject(string objectIdentifier, object value)
+        {
+            SetBagObject(GetBagKey(objectIdentifier), value);
+        }
+
         internal void SetBagObject(AbcBagKey key, object value)
         {
             if (this.bag == null)

@@ -112,6 +112,7 @@ namespace AbcDataVisualization
                 }
             }
         }
+
         protected override AbcSize MeasureOverride(AbcMeasureContext context)
         {
             if (this.axisLine == null)
@@ -153,6 +154,11 @@ namespace AbcDataVisualization
             this.lastLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelArrangeSlot });
 
             this.ControlRoot.Arrange(context);
+        }
+
+        protected override void PaintOverride(AbcContextBase context)
+        {
+            this.ControlRoot.Paint(context);
         }
 
         protected override void OnVisualTreeChanged(NativeVisualTree oldVisualTree)

@@ -15,5 +15,15 @@ namespace Abc.Visuals
                 child.Arrange(context);
             }
         }
+
+        protected override void PaintOverride(AbcContextBase context)
+        {
+            base.PaintOverride(context);
+
+            foreach (IAbcVisual child in this.Children)
+            {
+                child.Paint(context);
+            }
+        }
     }
 }

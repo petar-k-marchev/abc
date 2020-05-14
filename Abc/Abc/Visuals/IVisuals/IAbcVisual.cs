@@ -21,6 +21,8 @@ namespace Abc.Visuals
 
         void Arrange(AbcArrangeContext context);
 
+        void Paint(AbcContextBase context);
+
         AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey);
 
         void SetContextualPropertyValue(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue propertyValue);
