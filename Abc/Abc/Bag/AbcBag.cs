@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Abc.Visuals
+namespace Abc
 {
     internal class AbcBag
     {
@@ -30,6 +30,11 @@ namespace Abc.Visuals
             return TryGetBagObject(GetBagKey(objectIdentifier), out bagObject);
         }
 
+        internal void SetBagObject(string objectIdentifier, object value)
+        {
+            SetBagObject(GetBagKey(objectIdentifier), value);
+        }
+
         internal bool TryGetBagObject(AbcBagKey key, out object bagObject)
         {
             if (this.bag != null)
@@ -41,11 +46,6 @@ namespace Abc.Visuals
                 bagObject = null;
                 return false;
             }
-        }
-
-        internal void SetBagObject(string objectIdentifier, object value)
-        {
-            SetBagObject(GetBagKey(objectIdentifier), value);
         }
 
         internal void SetBagObject(AbcBagKey key, object value)

@@ -1,9 +1,8 @@
-﻿using Abc.Miscellaneous;
-
-namespace Abc.Primitives
+﻿namespace Abc
 {
     internal struct AbcSize
     {
+        internal static readonly AbcSize Zero = new AbcSize(0, 0);
         internal static readonly AbcSize Invalid = new AbcSize(-1, -1);
 
         internal double width;
@@ -17,8 +16,8 @@ namespace Abc.Primitives
 
         internal bool IsValid()
         {
-            return 0 < this.width && this.width < double.MaxValue &&
-                0 < this.height && this.height < double.MaxValue;
+            return AbcMath.IsValidPositiveDouble(this.width) &&
+                AbcMath.IsValidPositiveDouble(this.height);
         }
 
         public static bool operator ==(AbcSize size1, AbcSize size2)
@@ -46,6 +45,5 @@ namespace Abc.Primitives
 
             return false;
         }
-
     }
 }

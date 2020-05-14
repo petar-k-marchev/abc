@@ -1,4 +1,4 @@
-﻿namespace Abc.Miscellaneous
+﻿namespace Abc
 {
     internal static class HashHelper
     {

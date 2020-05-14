@@ -1,6 +1,4 @@
-﻿using Abc.Miscellaneous;
-
-namespace Abc.Primitives
+﻿namespace Abc
 {
     internal struct AbcRect
     {

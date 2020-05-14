@@ -1,6 +1,4 @@
-﻿using Abc.Primitives;
-
-namespace Abc.Visuals
+﻿namespace Abc.Visuals
 {
     internal class AbcArrangeContext : AbcContextBase
     {

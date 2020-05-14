@@ -1,17 +1,16 @@
 ﻿using Abc;
-using Abc.Primitives;
 using Abc.Visuals;
 using System;
 using System.Collections.Generic;
 
-namespace WpfControls
+namespace WpfControls.WpfRenderingVisualTreeInternals
 {
-    internal abstract class WpfDrawInstructionVisual : IAbcVisual
+    internal abstract class WpfVisual : IAbcVisual
     {
         private event EventHandler<AbcContextualPropertyValueChangedEventArgs> contextualPropertyValueChanged;
 
         private IAbcVisual visualParent;
-        private NativeVisualTree visualTree;
+        private AbcVisualTree visualTree;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
         private AbcSize desiredMeasure;
         private bool isMeasurePhase;
@@ -21,10 +20,6 @@ namespace WpfControls
         private bool isArrangeValid;
         private bool isPaintPhase;
         private bool isPaintValid;
-
-        internal WpfDrawInstructionVisual()
-        {
-        }
 
         event EventHandler<AbcContextualPropertyValueChangedEventArgs> IAbcVisual.ContextualPropertyValueChanged
         {
@@ -36,12 +31,6 @@ namespace WpfControls
             {
                 this.contextualPropertyValueChanged -= value;
             }
-        }
-
-        AbcControlInfo IAbcVisual.ControlInfo
-        {
-            get;
-            set;
         }
 
         IAbcVisual IAbcVisual.VisualParent
@@ -68,7 +57,7 @@ namespace WpfControls
             }
         }
 
-        NativeVisualTree IAbcVisual.VisualTree
+        AbcVisualTree IAbcVisual.VisualTree
         {
             get
             {
@@ -83,7 +72,7 @@ namespace WpfControls
                     return;
                 }
 
-                NativeVisualTree oldVisualTree = this.visualTree;
+                AbcVisualTree oldVisualTree = this.visualTree;
                 this.visualTree = value;
                 this.OnVisualTreeChanged(oldVisualTree);
             }
@@ -108,10 +97,7 @@ namespace WpfControls
         AbcContextualPropertyValue IAbcVisual.GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)
         {
             AbcContextualPropertyValue propertyValue = null;
-
             this.contextualProperties?.TryGetValue(propertyKey.key, out propertyValue);
-            // if not present - perhaps some get-on-demand default value (propertyKey.GetDefaultPropertyValue())
-
             return propertyValue;
         }
 
@@ -162,11 +148,18 @@ namespace WpfControls
             this.isPaintPhase = false;
         }
 
-        internal abstract AbcSize MeasureOverride(AbcMeasureContext context);
+        internal virtual AbcSize MeasureOverride(AbcMeasureContext context)
+        {
+            return AbcSize.Zero;
+        }
 
-        internal abstract void PaintOverride(AbcContextBase context);
+        internal virtual void PaintOverride(AbcContextBase context)
+        {
+        }
 
-        internal abstract void ArrangeOverride(AbcArrangeContext context);
+        internal virtual void ArrangeOverride(AbcArrangeContext context)
+        {
+        }
 
         internal virtual void InvalidateMeasureOverride()
         {
@@ -217,7 +210,7 @@ namespace WpfControls
         {
         }
 
-        protected virtual void OnVisualTreeChanged(NativeVisualTree oldVisualTree)
+        protected virtual void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
         {
         }
     }

@@ -1,11 +1,9 @@
 ﻿using Abc;
-using Abc.Primitives;
 using Abc.Visuals;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace WpfControls.WpfVisualTreeInternals
 {
@@ -16,7 +14,7 @@ namespace WpfControls.WpfVisualTreeInternals
         private event EventHandler<AbcContextualPropertyValueChangedEventArgs> contextualPropertyValueChanged;
 
         private IAbcVisual visualParent;
-        private NativeVisualTree visualTree;
+        private AbcVisualTree visualTree;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
         private bool isMeasurePhase;
         private bool isArrangePhase;
@@ -39,12 +37,6 @@ namespace WpfControls.WpfVisualTreeInternals
             {
                 this.contextualPropertyValueChanged -= value;
             }
-        }
-
-        AbcControlInfo IAbcVisual.ControlInfo
-        {
-            get;
-            set;
         }
 
         IAbcVisual IAbcVisual.VisualParent
@@ -71,7 +63,7 @@ namespace WpfControls.WpfVisualTreeInternals
             }
         }
 
-        NativeVisualTree IAbcVisual.VisualTree
+        AbcVisualTree IAbcVisual.VisualTree
         {
             get
             {
@@ -81,12 +73,10 @@ namespace WpfControls.WpfVisualTreeInternals
             {
                 if (this.visualTree == value)
                 {
-                    //temporary disable while testing IAbcControl
-                    //throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(IAbcVisual.VisualTree)));
-                    return;
+                    throw new Exception(string.Format("You shouldn't need to set the {0} twice.", nameof(IAbcVisual.VisualTree)));
                 }
 
-                NativeVisualTree oldVisualTree = this.visualTree;
+                AbcVisualTree oldVisualTree = this.visualTree;
                 this.visualTree = value;
                 this.OnVisualTreeChanged(oldVisualTree);
             }
@@ -185,24 +175,13 @@ namespace WpfControls.WpfVisualTreeInternals
             this.AddToParent();
         }
 
-        protected virtual void OnVisualTreeChanged(NativeVisualTree oldVisualTree)
+        protected virtual void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
         {
         }
 
         private void AddToParent()
         {
             IAbcVisual abcVisual = this;
-
-            if (abcVisual.ControlInfo is MasterControlInfo)
-            {
-                throw new NotImplementedException();
-            }
-
-            if (abcVisual.ControlInfo is SlaveControlInfo)
-            {
-                return;
-            }
-
             IAbcVisual abcVisualParent = abcVisual.VisualParent;
 
             if (abcVisualParent == null)

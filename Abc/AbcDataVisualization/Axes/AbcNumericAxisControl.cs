@@ -1,5 +1,5 @@
 ﻿using Abc;
-using Abc.Primitives;
+using Abc.Controls;
 using Abc.Visuals;
 using System;
 
@@ -39,7 +39,6 @@ namespace AbcDataVisualization
                 }
 
                 this.userMin = value;
-                this.AddFlag(AbcVisualFlag.AffectsArrangeAndMaybeMeasure);
             }
         }
 
@@ -57,7 +56,6 @@ namespace AbcDataVisualization
                 }
 
                 this.userMax = value;
-                this.AddFlag(AbcVisualFlag.AffectsArrangeAndMaybeMeasure);
             }
         }
 
@@ -75,7 +73,6 @@ namespace AbcDataVisualization
                 }
 
                 this.userStep = value;
-                this.AddFlag(AbcVisualFlag.AffectsArrangeOnly);
             }
         }
 
@@ -108,7 +105,7 @@ namespace AbcDataVisualization
                 if (this.canvas != value)
                 {
                     this.canvas = value;
-                    this.SetControlRoot(value);
+                    this.Root = value;
                 }
             }
         }
@@ -153,15 +150,15 @@ namespace AbcDataVisualization
             AbcRect lastLabelArrangeSlot = new AbcRect(axisLineArrangeSlot.Right() - this.lastLabel.DesiredMeasure.width, axisLineArrangeSlot.Bottom(), this.lastLabel.DesiredMeasure.width, this.lastLabel.DesiredMeasure.height);
             this.lastLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelArrangeSlot });
 
-            this.ControlRoot.Arrange(context);
+            this.Root.Arrange(context);
         }
 
         protected override void PaintOverride(AbcContextBase context)
         {
-            this.ControlRoot.Paint(context);
+            this.Root.Paint(context);
         }
 
-        protected override void OnVisualTreeChanged(NativeVisualTree oldVisualTree)
+        protected override void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
         {
             base.OnVisualTreeChanged(oldVisualTree);
 

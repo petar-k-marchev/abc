@@ -1,5 +1,4 @@
-﻿using Abc.Primitives;
-using System;
+﻿using System;
 
 namespace Abc.Visuals
 {
@@ -7,24 +6,15 @@ namespace Abc.Visuals
     {
         event EventHandler<AbcContextualPropertyValueChangedEventArgs> ContextualPropertyValueChanged;
 
-        AbcControlInfo ControlInfo { get; set; }
-
+        AbcVisualTree VisualTree { get; set; }
         IAbcVisual VisualParent { get; set; }
-
-        NativeVisualTree VisualTree { get; set; }
-
         AbcSize DesiredMeasure { get; }
-
         AbcRect ArrangeSlot { get; }
 
         void Measure(AbcMeasureContext context);
-
         void Arrange(AbcArrangeContext context);
-
         void Paint(AbcContextBase context);
-
         AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey);
-
         void SetContextualPropertyValue(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue propertyValue);
     }
 }

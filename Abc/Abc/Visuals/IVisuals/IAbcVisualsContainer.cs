@@ -1,6 +1,4 @@
-﻿using Abc.Miscellaneous;
-
-namespace Abc.Visuals
+﻿namespace Abc.Visuals
 {
     internal interface IAbcVisualsContainer : IAbcVisual
     {

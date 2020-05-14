@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Abc.Miscellaneous
+namespace Abc
 {
     public class ObservableItemCollectionChangedEventArgs<T> : EventArgs
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace Abc.Visuals
+namespace Abc
 {
     internal struct AbcBagKey
     {

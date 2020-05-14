@@ -1,6 +1,4 @@
-﻿using Abc.Primitives;
-using Abc.Visuals;
-using Accessibility;
+﻿using Abc.Visuals;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,7 +21,7 @@ namespace WpfControls.WpfVisualTreeInternals
             foreach (IAbcVisual abcChild in abcCanvas.Children)
             {
                 AbcContextualPropertyValue arrangeSlotPropertyValue = abcChild.GetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey);
-                context.arrangeSlot = arrangeSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)arrangeSlotPropertyValue).value : AbcRect.Empty;
+                context.arrangeSlot = arrangeSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)arrangeSlotPropertyValue).value : abcCanvas.ArrangeSlot;
 
                 WpfVisual wpfVisual = (WpfVisual)abcChild;
                 FrameworkElement uiElement = (FrameworkElement)wpfVisual.uiElement;

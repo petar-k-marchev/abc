@@ -1,16 +1,17 @@
-﻿using Abc.Primitives;
+﻿using Abc;
 using Abc.Visuals;
 using AbcDataVisualization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using WpfControls.WpfVisualTreeInternals;
 
 namespace WpfControls.DataVisualization
 {
     public class WpfNumericAxisControl : Control
     {
         private readonly AbcNumericAxisControl abcNumericAxis;
-        private readonly WpfVisualTreeBase visualTree;
+        private readonly AbcVisualTree visualTree;
 
         static WpfNumericAxisControl()
         {
@@ -19,33 +20,21 @@ namespace WpfControls.DataVisualization
 
         public WpfNumericAxisControl()
         {
-            // WpfVisualTree
-            // WpfDrawingVisualTree
             // WpfVisualTree2
             // WpfDrawingVisualTree2
-            string test = nameof(WpfDrawingVisualTree2);
+            string test = nameof(WpfRenderingVisualTree);
 
             if (test == nameof(WpfVisualTree))
             {
                 this.visualTree = new WpfVisualTree();
             }
-            else if (test == nameof(WpfDrawingVisualTree))
+            else if (test == nameof(WpfRenderingVisualTree))
             {
-                this.visualTree = new WpfDrawingVisualTree();
-                this.visualTree.NativeRoot = this;
-            }
-            else if (test == nameof(WpfVisualTree2))
-            {
-                this.visualTree = new WpfVisualTree2();
-            }
-            else if (test == nameof(WpfDrawingVisualTree2))
-            {
-                this.visualTree = new WpfDrawingVisualTree2();
+                this.visualTree = new WpfRenderingVisualTree();
             }
 
             this.abcNumericAxis = new AbcNumericAxisControl();
             this.abcNumericAxis.VisualTree = this.visualTree;
-            this.visualTree.AbcRoot = this.abcNumericAxis.ControlRoot;
 
             this.abcNumericAxis.UserMin = 0;
             this.abcNumericAxis.UserMax = 100;
@@ -59,13 +48,8 @@ namespace WpfControls.DataVisualization
             if (this.visualTree is WpfVisualTree)
             {
                 Canvas numericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
-                this.visualTree.NativeRoot = numericAxisCanvas;
-            }
-
-            if (this.visualTree is WpfVisualTree2)
-            {
-                Canvas numericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
-                this.visualTree.NativeRoot = numericAxisCanvas;
+                WpfVisual wpfVisual = (WpfVisual)this.abcNumericAxis.Root;
+                numericAxisCanvas.Children.Add(wpfVisual.uiElement);
             }
         }
 
@@ -98,12 +82,6 @@ namespace WpfControls.DataVisualization
                 // we can skip notifying axis (for testing purposes mainly)
                 // now we must expect for visual-tree-part to let the engine know there is a measure invalidated
             }
-            else if (this.visualTree is WpfVisualTree2)
-            {
-                // font size propagates automatically to visuals
-                // we can skip notifying axis (for testing purposes mainly)
-                // now we must expect for visual-tree-part to let the engine know there is a measure invalidated
-            }
             else
             {
                 if (e.Property == FontSizeProperty)
@@ -118,13 +96,8 @@ namespace WpfControls.DataVisualization
             base.OnRender(drawingContext);
 
             AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
-            context.Bag.SetBagObject(WpfDrawingVisualTree2.DrawingContextIdentifier, drawingContext);
+            context.Bag.SetBagObject(WpfRenderingVisualTree.DrawingContextIdentifier, drawingContext);
             this.abcNumericAxis.Paint(context);
-
-            if (this.visualTree is WpfDrawingVisualTree wpfDrawingVisualTree)
-            {
-                wpfDrawingVisualTree.Render(drawingContext);
-            }
         }
     }
 }

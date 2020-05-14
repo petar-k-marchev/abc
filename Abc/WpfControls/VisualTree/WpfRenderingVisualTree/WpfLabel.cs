@@ -1,12 +1,12 @@
-﻿using Abc.Primitives;
+﻿using Abc;
 using Abc.Visuals;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
-namespace WpfControls
+namespace WpfControls.WpfRenderingVisualTreeInternals
 {
-    internal class WpfDrawLabelVisual : WpfDrawInstructionVisual, IAbcLabel
+    internal class WpfLabel : WpfVisual, IAbcLabel
     {
         private FormattedText nativeFormattedText;
         private string text;
@@ -53,14 +53,10 @@ namespace WpfControls
             }
             else
             {
-                return new AbcSize(0, 0);
+                return AbcSize.Zero;
             }
         }
         
-        internal override void ArrangeOverride(AbcArrangeContext context)
-        {
-        }
-
         internal override void PaintOverride(AbcContextBase context)
         {
             if (!this.TryEnsureFormattedText())
@@ -72,7 +68,7 @@ namespace WpfControls
             AbcRect arrangeSlot = abcVisual.ArrangeSlot;
 
             object drawingContextObject;
-            context.Bag.TryGetBagObject(WpfDrawingVisualTree2.DrawingContextIdentifier, out drawingContextObject);
+            context.Bag.TryGetBagObject(WpfRenderingVisualTree.DrawingContextIdentifier, out drawingContextObject);
             DrawingContext drawingContext = (DrawingContext)drawingContextObject;
 
             Point position = new Point(arrangeSlot.x, arrangeSlot.y);

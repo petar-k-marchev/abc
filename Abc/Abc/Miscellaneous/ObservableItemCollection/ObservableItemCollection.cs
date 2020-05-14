@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 
-namespace Abc.Miscellaneous
+namespace Abc
 {
     public class ObservableItemCollection<T> : ObservableCollection<T>
     {
