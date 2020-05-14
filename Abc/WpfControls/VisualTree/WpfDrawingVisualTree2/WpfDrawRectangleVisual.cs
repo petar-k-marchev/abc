@@ -25,8 +25,6 @@ namespace WpfControls
             context.Bag.TryGetBagObject(WpfDrawingVisualTree2.DrawingContextIdentifier, out drawingContextObject);
             DrawingContext drawingContext = (DrawingContext)drawingContextObject;
 
-            //Point position = new Point(arrangeSlot.x, arrangeSlot.y);
-            //Pen pen = new Pen();
             drawingContext.DrawRectangle(Brushes.Black, null, new Rect(arrangeSlot.x, arrangeSlot.y, arrangeSlot.size.width, arrangeSlot.size.height));
         }
     }
