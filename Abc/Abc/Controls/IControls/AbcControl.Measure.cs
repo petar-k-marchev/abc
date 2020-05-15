@@ -27,7 +27,9 @@ namespace Abc.Controls
             }
 
             this.isMeasurePhase = true;
+            AbcSize availableSize = context.availableSize;
             this.desiredMeasure = this.MeasureOverride(context);
+            context.availableSize = availableSize;
             this.isMeasurePhase = false;
             this.isMeasureValid = true;
         }

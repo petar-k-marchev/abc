@@ -23,8 +23,10 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
             }
         }
 
-        internal override void PaintOverride(AbcContextBase context)
+        internal override void PaintOverride(AbcArrangeContext context)
         {
+            base.PaintOverride(context);
+
             IAbcVisualsContainer abcVisualsContainer = this;
             foreach (IAbcVisual child in abcVisualsContainer.Children)
             {

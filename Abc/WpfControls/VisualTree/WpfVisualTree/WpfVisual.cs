@@ -149,6 +149,12 @@ namespace WpfControls.WpfVisualTreeInternals
 
         void IAbcVisual.Measure(AbcMeasureContext context)
         {
+            IAbcVisual abcVisual = this;
+            if (!abcVisual.IsVisible)
+            {
+                return;
+            }
+
             this.isMeasurePhase = true;
             this.MeasureOverride(context);
             this.isMeasurePhase = false;
@@ -157,9 +163,14 @@ namespace WpfControls.WpfVisualTreeInternals
 
         void IAbcVisual.Arrange(AbcArrangeContext context)
         {
+            IAbcVisual abcVisual = this;
+            if (!abcVisual.IsVisible)
+            {
+                return;
+            }
+
             if (!this.isMeasureValid)
             {
-                IAbcVisual abcVisual = this;
                 abcVisual.Measure(new AbcMeasureContext(context.arrangeSlot.size, context));
             }
 
@@ -171,8 +182,19 @@ namespace WpfControls.WpfVisualTreeInternals
             this.isArrangeValid = true;
         }
 
-        void IAbcVisual.Paint(AbcContextBase context)
+        void IAbcVisual.Paint(AbcArrangeContext context)
         {
+            IAbcVisual abcVisual = this;
+            if (!abcVisual.IsVisible)
+            {
+                return;
+            }
+
+            if (!this.isArrangeValid)
+            {
+                abcVisual.Arrange(context);
+            }
+
             this.isPaintPhase = true;
             this.PaintOverride(context);
             this.isPaintPhase = false;
@@ -209,7 +231,7 @@ namespace WpfControls.WpfVisualTreeInternals
             this.uiElement.Arrange(finalRect);
         }
 
-        internal virtual void PaintOverride(AbcContextBase context)
+        internal virtual void PaintOverride(AbcArrangeContext context)
         {
             this.isPaintValid = true;
         }

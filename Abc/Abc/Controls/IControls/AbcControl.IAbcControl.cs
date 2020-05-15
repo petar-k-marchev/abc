@@ -31,6 +31,21 @@ namespace Abc.Controls
             }
         }
 
+        void IAbcControl.Measure(AbcMeasureContext context)
+        {
+            this.Measure(context);
+        }
+
+        void IAbcControl.Arrange(AbcArrangeContext context)
+        {
+            this.Arrange(context);
+        }
+
+        void IAbcControl.Paint(AbcArrangeContext context)
+        {
+            this.Paint(context);
+        }
+
         void IAbcControl.RaiseInvalidationRequest(InvalidationRequestFlag flag)
         {
             switch (flag)

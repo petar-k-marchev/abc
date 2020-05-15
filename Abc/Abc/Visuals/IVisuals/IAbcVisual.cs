@@ -14,7 +14,7 @@ namespace Abc.Visuals
 
         void Measure(AbcMeasureContext context);
         void Arrange(AbcArrangeContext context);
-        void Paint(AbcContextBase context);
+        void Paint(AbcArrangeContext context);
         AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey);
         void SetContextualPropertyValue(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue propertyValue);
         void InvalidationRequestFromChild(InvalidationRequestFlag flag, IAbcVisual child);

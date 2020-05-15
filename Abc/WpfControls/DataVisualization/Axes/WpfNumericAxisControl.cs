@@ -131,7 +131,7 @@ namespace WpfControls.DataVisualization
 
             if (this.controlCoordinator.visualTree is WpfRenderingVisualTree)
             {
-                AbcContextBase context = new AbcContextBase();
+                AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
                 context.Bag.SetBagObject(WpfRenderingVisualTree.DrawingContextIdentifier, drawingContext);
                 this.controlCoordinator.abcControl.Paint(context);
             }

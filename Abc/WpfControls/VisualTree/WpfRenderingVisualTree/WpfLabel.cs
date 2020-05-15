@@ -57,8 +57,10 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
             }
         }
         
-        internal override void PaintOverride(AbcContextBase context)
+        internal override void PaintOverride(AbcArrangeContext context)
         {
+            base.PaintOverride(context);
+
             if (!this.TryEnsureFormattedText())
             {
                 return;

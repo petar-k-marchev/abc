@@ -175,11 +175,17 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
             this.isArrangeValid = true;
         }
 
-        void IAbcVisual.Paint(AbcContextBase context)
+        void IAbcVisual.Paint(AbcArrangeContext context)
         {
             if (!this.isVisible)
             {
                 return;
+            }
+
+            if (!this.isArrangeValid)
+            {
+                IAbcVisual abcVisual = this;
+                abcVisual.Arrange(context);
             }
 
             this.isPaintPhase = true;
@@ -212,7 +218,7 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
             return AbcSize.Zero;
         }
 
-        internal virtual void PaintOverride(AbcContextBase context)
+        internal virtual void PaintOverride(AbcArrangeContext context)
         {
             this.isPaintValid = true;
         }

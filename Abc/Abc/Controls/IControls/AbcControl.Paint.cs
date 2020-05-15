@@ -7,12 +7,19 @@ namespace Abc.Controls
         private bool isPaintPhase;
         private bool isPaintValid;
 
-        protected abstract void PaintOverride(AbcContextBase context);
+        protected abstract void PaintOverride(AbcArrangeContext context);
 
-        internal void Paint(AbcContextBase context)
+        internal void Paint(AbcArrangeContext context)
         {
+            if (!this.isArrangeValid)
+            {
+                this.Arrange(context);
+            }
+
             this.isPaintPhase = true;
+            AbcRect arrangeSlot = context.arrangeSlot;
             this.PaintOverride(context);
+            context.arrangeSlot = arrangeSlot;
             this.isPaintPhase = false;
             this.isPaintValid = true;
         }

@@ -30,6 +30,11 @@ namespace Abc.Controls
                 return;
             }
 
+            if (!this.isMeasureValid)
+            {
+                this.Measure(new AbcMeasureContext(context.arrangeSlot.size, context));
+            }
+
             this.isArrangePhase = true;
             this.arrangeSlot = context.arrangeSlot;
             this.ArrangeOverride(context);

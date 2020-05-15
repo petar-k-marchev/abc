@@ -10,6 +10,9 @@ namespace Abc.Controls
         AbcVisualTree VisualTree { get; set; }
         IAbcVisual Root { get; }
 
+        void Measure(AbcMeasureContext context);
+        void Arrange(AbcArrangeContext context);
+        void Paint(AbcArrangeContext context);
         void RaiseInvalidationRequest(InvalidationRequestFlag flag);
     }
 

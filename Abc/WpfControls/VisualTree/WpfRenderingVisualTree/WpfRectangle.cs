@@ -7,8 +7,10 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 {
     internal class WpfRectangle : WpfVisual, IAbcRectangle
     {
-        internal override void PaintOverride(AbcContextBase context)
+        internal override void PaintOverride(AbcArrangeContext context)
         {
+            base.PaintOverride(context);
+
             IAbcVisual abcVisual = this;
             AbcRect arrangeSlot = abcVisual.ArrangeSlot;
 

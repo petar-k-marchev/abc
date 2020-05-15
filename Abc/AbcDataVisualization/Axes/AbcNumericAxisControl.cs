@@ -155,7 +155,7 @@ namespace AbcDataVisualization
             this.Canvas.Arrange(context);
         }
 
-        protected override void PaintOverride(AbcContextBase context)
+        protected override void PaintOverride(AbcArrangeContext context)
         {
             this.Canvas.Paint(context);
         }
@@ -231,8 +231,8 @@ namespace AbcDataVisualization
                     break;
                 }
 
-                double relativeTickPosition = this.CalculateRelativeTickPosition(currValue);
-                this.tickInfos.Add(new AxisTickInfo { relativePosition = relativeTickPosition });
+                double relativePosition = this.CalculateRelativePosition(currValue);
+                this.tickInfos.Add(new AxisTickInfo { relativePosition = relativePosition });
             }
         }
 
@@ -283,9 +283,9 @@ namespace AbcDataVisualization
                     break;
                 }
 
-                double relativeTickPosition = this.CalculateRelativeTickPosition(currValue);
+                double relativePosition = this.CalculateRelativePosition(currValue);
                 string labelContent = "" + currValue;
-                this.labelInfos.Add(new AxisLabelInfo { relativePosition = relativeTickPosition, value = currValue, labelContent = labelContent });
+                this.labelInfos.Add(new AxisLabelInfo { relativePosition = relativePosition, value = currValue, labelContent = labelContent });
             }
         }
 
@@ -334,9 +334,9 @@ namespace AbcDataVisualization
             this.labelsPool.HideAfter(count);
         }
 
-        private double CalculateRelativeTickPosition(double currValue)
+        private double CalculateRelativePosition(double value)
         {
-            double relativeValue = (currValue - this.userMin) / (this.userMax - this.userMin);
+            double relativeValue = (value - this.userMin) / (this.userMax - this.userMin);
             return relativeValue;
         }
 
