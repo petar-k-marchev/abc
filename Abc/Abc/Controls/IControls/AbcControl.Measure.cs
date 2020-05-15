@@ -2,7 +2,7 @@
 
 namespace Abc.Controls
 {
-    internal abstract partial class AbcControl : IAbcControl
+    internal abstract partial class AbcControl
     {
         private bool isMeasurePhase;
         private AbcSize desiredMeasure;
@@ -18,7 +18,7 @@ namespace Abc.Controls
 
         protected abstract AbcSize MeasureOverride(AbcMeasureContext context);
 
-        public void Measure(AbcMeasureContext context)
+        internal void Measure(AbcMeasureContext context)
         {
             if (this.isMeasureValid)
             {
@@ -26,11 +26,18 @@ namespace Abc.Controls
             }
 
             this.isMeasurePhase = true;
-
             this.desiredMeasure = this.MeasureOverride(context);
-
             this.isMeasurePhase = false;
             this.isMeasureValid = true;
+        }
+
+        internal void InvalidateMeasure()
+        {
+            if (this.isMeasureValid)
+            {
+                this.isMeasureValid = false;
+                this.InvalidateArrange();
+            }
         }
     }
 }

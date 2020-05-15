@@ -6,8 +6,9 @@ namespace Abc.Controls
     internal abstract partial class AbcControl : IAbcControl
     {
         private AbcVisualTree visualTree;
+        private IAbcVisual root;
 
-        public AbcVisualTree VisualTree
+        internal AbcVisualTree VisualTree
         {
             get
             {
@@ -26,10 +27,14 @@ namespace Abc.Controls
             }
         }
 
-        public IAbcVisual Root
+        internal IAbcVisual Root
         {
-            get;
-            protected set;
+            get { return this.root; }
+        }
+
+        protected void SetRoot(IAbcVisual newRoot)
+        {
+            this.root = newRoot;
         }
 
         protected virtual void OnVisualTreeChanged(AbcVisualTree oldVisualTree)

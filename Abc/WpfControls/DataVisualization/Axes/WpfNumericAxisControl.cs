@@ -99,15 +99,16 @@ namespace WpfControls.DataVisualization
         {
             base.OnPropertyChanged(e);
 
-            if (this.visualTree is WpfVisualTree)
+            if (e.Property == FontSizeProperty)
             {
-                // font size propagates automatically to visuals
-                // we can skip notifying axis (for testing purposes mainly)
-                // now we must expect for visual-tree-part to let the engine know there is a measure invalidated
-            }
-            else
-            {
-                if (e.Property == FontSizeProperty)
+                if (this.visualTree is WpfVisualTree)
+                {
+                    //// font size will automatically propagate to textblock elements, so no need to 
+                    //// set the abcNumericAxis.FontSize property
+                    //// but we need to notify the axis that the measure is no longer valid
+                    this.abcNumericAxis.InvalidateMeasure();
+                }
+                else
                 {
                     this.abcNumericAxis.FontSize = this.FontSize;
                 }

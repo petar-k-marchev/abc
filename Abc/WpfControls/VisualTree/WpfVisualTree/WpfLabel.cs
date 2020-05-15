@@ -35,6 +35,8 @@ namespace WpfControls.WpfVisualTreeInternals
                 {
                     this.textBlock.ClearValue(TextBlock.FontSizeProperty);
                 }
+
+                this.InvalidateMeasure();
             }
         }
     }

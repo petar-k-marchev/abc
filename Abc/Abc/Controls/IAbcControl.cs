@@ -6,5 +6,12 @@ namespace Abc.Controls
     {
         AbcVisualTree VisualTree { get; set; }
         IAbcVisual Root { get; }
+
+        void OnRootMeasureInvalidated();
+    }
+
+    internal static class AbcControlContextualProperties
+    {
+        internal static readonly AbcContextualPropertyKey ControlPropertyKey = new AbcContextualPropertyKey();
     }
 }

@@ -1,17 +1,16 @@
 ﻿using Abc.Visuals;
 using System.Windows;
-using System.Windows.Controls;
 
 namespace WpfControls.WpfVisualTreeInternals
 {
     internal class WpfCanvas : WpfVisualsContainer, IAbcCanvas
     {
-        private readonly Canvas canvas;
+        private readonly SlotPanel slotPanel;
 
         internal WpfCanvas()
-            : base(new Canvas())
+            : base(new SlotPanel())
         {
-            this.canvas = (Canvas)this.uiElement;
+            this.slotPanel = (SlotPanel)this.uiElement;
         }
 
         internal override void ArrangeOverride(AbcArrangeContext context)
@@ -24,11 +23,8 @@ namespace WpfControls.WpfVisualTreeInternals
                 context.arrangeSlot = arrangeSlotPropertyValue != null ? ((AbcContextualPropertyValue.AbcRect)arrangeSlotPropertyValue).value : abcCanvas.ArrangeSlot;
 
                 WpfVisual wpfVisual = (WpfVisual)abcChild;
-                FrameworkElement uiElement = (FrameworkElement)wpfVisual.uiElement;
-                Canvas.SetLeft(uiElement, context.arrangeSlot.x);
-                Canvas.SetTop(uiElement, context.arrangeSlot.y);
-                uiElement.Width = context.arrangeSlot.size.width;
-                uiElement.Height = context.arrangeSlot.size.height;
+                FrameworkElement frameworkElement = (FrameworkElement)wpfVisual.uiElement;
+                SlotPanel.SetSlot(frameworkElement, new Rect(context.arrangeSlot.x, context.arrangeSlot.y, context.arrangeSlot.size.width, context.arrangeSlot.size.height));
 
                 abcChild.Arrange(context);
             }

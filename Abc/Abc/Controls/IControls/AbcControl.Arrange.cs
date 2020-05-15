@@ -2,7 +2,7 @@
 
 namespace Abc.Controls
 {
-    internal abstract partial class AbcControl : IAbcControl
+    internal abstract partial class AbcControl
     {
         private bool isArrangePhase;
         private AbcRect arrangeSlot;
@@ -18,7 +18,7 @@ namespace Abc.Controls
 
         protected abstract void ArrangeOverride(AbcArrangeContext context);
 
-        public void Arrange(AbcArrangeContext context)
+        internal void Arrange(AbcArrangeContext context)
         {
             if (this.isArrangeValid)
             {
@@ -36,6 +36,15 @@ namespace Abc.Controls
             context.arrangeSlot = this.arrangeSlot;
             this.isArrangePhase = false;
             this.isArrangeValid = true;
+        }
+
+        internal void InvalidateArrange()
+        {
+            if (this.isArrangeValid)
+            {
+                this.isArrangeValid = false;
+                this.InvalidatePaint();
+            }
         }
     }
 }

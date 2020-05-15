@@ -1,4 +1,5 @@
 ﻿using Abc;
+using Abc.Controls;
 using Abc.Visuals;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,12 @@ namespace WpfControls.WpfVisualTreeInternals
         private AbcVisualTree visualTree;
         private Dictionary<int, AbcContextualPropertyValue> contextualProperties;
         private bool isMeasurePhase;
+        private bool isMeasureValid;
         private bool isArrangePhase;
         private AbcRect arrangeSlot;
         private bool isArrangeValid;
         private bool isPaintPhase;
+        private bool isPaintValid;
 
         internal WpfVisual(UIElement uiElement)
         {
@@ -132,13 +135,20 @@ namespace WpfControls.WpfVisualTreeInternals
 
         void IAbcVisual.Measure(AbcMeasureContext context)
         {
-            isMeasurePhase = true;
+            this.isMeasurePhase = true;
             this.MeasureOverride(context);
-            isMeasurePhase = false;
+            this.isMeasurePhase = false;
+            this.isMeasureValid = true;
         }
 
         void IAbcVisual.Arrange(AbcArrangeContext context)
         {
+            if (!this.isMeasureValid)
+            {
+                IAbcVisual abcVisual = this;
+                abcVisual.Measure(new AbcMeasureContext(context.arrangeSlot.size, context));
+            }
+
             this.isArrangePhase = true;
             this.arrangeSlot = context.arrangeSlot;
             this.ArrangeOverride(context);
@@ -154,8 +164,17 @@ namespace WpfControls.WpfVisualTreeInternals
             this.isPaintPhase = false;
         }
 
+        void IAbcVisual.OnChildMeasureInvalidated(IAbcVisual child)
+        {
+            this.InvalidateMeasure();
+        }
+
         internal virtual void MeasureOverride(AbcMeasureContext context)
         {
+            //FrameworkElement frameworkElement = (FrameworkElement)this.uiElement;
+            //frameworkElement.Width = double.NaN;
+            //frameworkElement.Height = double.NaN;
+
             this.uiElement.Measure(new Size(context.availableSize.width, context.availableSize.height));
         }
 
@@ -167,6 +186,55 @@ namespace WpfControls.WpfVisualTreeInternals
 
         internal virtual void PaintOverride(AbcContextBase context)
         {
+            this.isPaintValid = true;
+        }
+
+        internal virtual void InvalidateMeasureOverride()
+        {
+            if (this.visualParent != null)
+            {
+                this.visualParent.OnChildMeasureInvalidated(this);
+            }
+            else
+            {
+                IAbcVisual abcVisual = this;
+                AbcContextualPropertyValue controlPropertyValue = abcVisual.GetContextualPropertyValue(AbcControlContextualProperties.ControlPropertyKey);
+                IAbcControl control = (IAbcControl)(controlPropertyValue != null ? ((AbcContextualPropertyValue.AbcObject)controlPropertyValue).value : null);
+                control?.OnRootMeasureInvalidated();
+            }
+        }
+
+        internal void InvalidateMeasure()
+        {
+            this.uiElement.InvalidateMeasure();
+
+            if (this.isMeasureValid)
+            {
+                this.isMeasureValid = false;
+                this.InvalidateMeasureOverride();
+                this.InvalidateArrange();
+            }
+        }
+
+        internal void InvalidateArrange()
+        {
+            this.uiElement.InvalidateArrange();
+
+            if (this.isArrangeValid)
+            {
+                this.isArrangeValid = false;
+                this.InvalidatePaint();
+            }
+        }
+
+        internal void InvalidatePaint()
+        {
+            this.uiElement.InvalidateVisual();
+
+            if (this.isPaintValid)
+            {
+                this.isPaintValid = false;
+            }
         }
 
         protected virtual void OnVisualParentChanged(IAbcVisual oldVisualParent)

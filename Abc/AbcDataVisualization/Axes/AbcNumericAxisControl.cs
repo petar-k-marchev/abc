@@ -105,7 +105,7 @@ namespace AbcDataVisualization
                 if (this.canvas != value)
                 {
                     this.canvas = value;
-                    this.Root = value;
+                    this.SetRoot(value);
                 }
             }
         }
@@ -147,15 +147,15 @@ namespace AbcDataVisualization
             AbcRect firstLabelArrangeSlot = new AbcRect(0, axisLineArrangeSlot.Bottom(), this.firstLabel.DesiredMeasure.width, this.firstLabel.DesiredMeasure.height);
             this.firstLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = firstLabelArrangeSlot });
 
-            AbcRect lastLabelArrangeSlot = new AbcRect(axisLineArrangeSlot.Right() - this.lastLabel.DesiredMeasure.width, axisLineArrangeSlot.Bottom(), this.lastLabel.DesiredMeasure.width, this.lastLabel.DesiredMeasure.height);
+            AbcRect lastLabelArrangeSlot = new AbcRect(axisLineArrangeSlot.Right() - (this.lastLabel.DesiredMeasure.width / 2), axisLineArrangeSlot.Bottom(), this.lastLabel.DesiredMeasure.width, this.lastLabel.DesiredMeasure.height);
             this.lastLabel.SetContextualPropertyValue(AbcCanvasContextualProperties.ArrangeSlotPropertyKey, new AbcContextualPropertyValue.AbcRect { value = lastLabelArrangeSlot });
 
-            this.Root.Arrange(context);
+            this.Canvas.Arrange(context);
         }
 
         protected override void PaintOverride(AbcContextBase context)
         {
-            this.Root.Paint(context);
+            this.Canvas.Paint(context);
         }
 
         protected override void OnVisualTreeChanged(AbcVisualTree oldVisualTree)
@@ -174,6 +174,7 @@ namespace AbcDataVisualization
             if (this.VisualTree != null)
             {
                 this.Canvas = (IAbcCanvas)this.VisualTree.CreateVisual(typeof(IAbcCanvas));
+                this.Canvas.SetContextualPropertyValue(AbcControlContextualProperties.ControlPropertyKey, new AbcContextualPropertyValue.AbcObject { value = this });
             }
         }
 
@@ -182,6 +183,7 @@ namespace AbcDataVisualization
             if (this.axisLine != null)
             {
                 this.firstLabel.FontSize = this.FontSize;
+                this.lastLabel.FontSize = this.FontSize;
             }
         }
     }

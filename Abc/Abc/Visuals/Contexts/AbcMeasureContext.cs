@@ -9,6 +9,12 @@
             this.availableSize = availableSize;
         }
 
+        internal AbcMeasureContext(AbcSize availableSize, AbcContextBase owner)
+            : base(owner)
+        {
+            this.availableSize = availableSize;
+        }
+
         internal AbcMeasureContext(AbcMeasureContext owner)
             : base(owner)
         {

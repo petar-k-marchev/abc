@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Abc.Controls;
+using System;
 
 namespace Abc.Visuals
 {
@@ -16,5 +17,6 @@ namespace Abc.Visuals
         void Paint(AbcContextBase context);
         AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey);
         void SetContextualPropertyValue(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue propertyValue);
+        void OnChildMeasureInvalidated(IAbcVisual child);
     }
 }

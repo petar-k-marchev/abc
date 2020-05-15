@@ -1,4 +1,5 @@
 ﻿using Abc;
+using Abc.Controls;
 using Abc.Visuals;
 using System;
 using System.Collections.Generic;
@@ -133,6 +134,12 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         void IAbcVisual.Arrange(AbcArrangeContext context)
         {
+            if (!this.isMeasureValid)
+            {
+                IAbcVisual abcVisual = this;
+                abcVisual.Measure(new AbcMeasureContext(context.arrangeSlot.size, context));
+            }
+
             this.isArrangePhase = true;
             this.arrangeSlot = context.arrangeSlot;
             this.ArrangeOverride(context);
@@ -148,6 +155,11 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
             this.isPaintPhase = false;
         }
 
+        void IAbcVisual.OnChildMeasureInvalidated(IAbcVisual child)
+        {
+            this.InvalidateMeasure();
+        }
+
         internal virtual AbcSize MeasureOverride(AbcMeasureContext context)
         {
             return AbcSize.Zero;
@@ -155,6 +167,7 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         internal virtual void PaintOverride(AbcContextBase context)
         {
+            this.isPaintValid = true;
         }
 
         internal virtual void ArrangeOverride(AbcArrangeContext context)
@@ -163,7 +176,17 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         internal virtual void InvalidateMeasureOverride()
         {
-            // notify parent measure is invalid
+            if (this.visualParent != null)
+            {
+                this.visualParent.OnChildMeasureInvalidated(this);
+            }
+            else
+            {
+                IAbcVisual abcVisual = this;
+                AbcContextualPropertyValue controlPropertyValue = abcVisual.GetContextualPropertyValue(AbcControlContextualProperties.ControlPropertyKey);
+                IAbcControl control = (IAbcControl)(controlPropertyValue != null ? ((AbcContextualPropertyValue.AbcObject)controlPropertyValue).value : null);
+                control?.OnRootMeasureInvalidated();
+            }
         }
 
         internal virtual void InvalidateArrangeOverride()
@@ -183,7 +206,6 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
                 this.isMeasureValid = false;
                 this.InvalidateMeasureOverride();
                 this.InvalidateArrange();
-                this.InvalidatePaint();
             }
         }
 
