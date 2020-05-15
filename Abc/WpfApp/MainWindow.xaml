@@ -11,8 +11,40 @@
         <Grid.RowDefinitions>
             <RowDefinition />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <wpfControls:WpfNumericAxisControl x:Name="axis" />
-        <Slider Grid.Row="1" Minimum="1" Maximum="50" Value="{Binding FontSize, Source={x:Reference axis}, Mode=TwoWay}" />
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Min" />
+                <TextBox Grid.Column="1" Text="{Binding Minimum, Source={x:Reference axis}, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <Grid Grid.Column="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Min" />
+                <TextBox Grid.Column="1" Text="{Binding Step, Source={x:Reference axis}, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <Label Content="Min" />
+                <TextBox Grid.Column="1" Text="{Binding Maximum, Source={x:Reference axis}, UpdateSourceTrigger=PropertyChanged}" />
+            </Grid>
+        </Grid>
+        <Slider Grid.Row="2" Minimum="1" Maximum="50" Value="{Binding FontSize, Source={x:Reference axis}, Mode=TwoWay}" />
     </Grid>
 </Window>

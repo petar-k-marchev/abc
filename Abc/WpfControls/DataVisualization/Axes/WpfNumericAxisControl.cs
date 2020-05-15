@@ -4,15 +4,21 @@ using AbcDataVisualization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using WpfControls.WpfVisualTreeInternals;
 
 namespace WpfControls.DataVisualization
 {
     public class WpfNumericAxisControl : Control
     {
-        private readonly AbcNumericAxisControl abcNumericAxis;
-        private readonly AbcVisualTree visualTree;
-        private Canvas numericAxisCanvas;
+        public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(
+            "Minimum", typeof(double), typeof(WpfNumericAxisControl), new PropertyMetadata(0.0));
+
+        public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(
+            "Maximum", typeof(double), typeof(WpfNumericAxisControl), new PropertyMetadata(100.0));
+
+        public static readonly DependencyProperty StepProperty = DependencyProperty.Register(
+            "Step", typeof(double), typeof(WpfNumericAxisControl), new PropertyMetadata(25.0));
+
+        private readonly WpfControlCoordinator<AbcNumericAxisControl> controlCoordinator;
 
         static WpfNumericAxisControl()
         {
@@ -22,57 +28,49 @@ namespace WpfControls.DataVisualization
         public WpfNumericAxisControl()
         {
             string test = nameof(WpfRenderingVisualTree);
-
+            
+            AbcVisualTree visualTree = null;
+            
             if (test == nameof(WpfVisualTree))
             {
-                this.visualTree = new WpfVisualTree();
+                visualTree = new WpfVisualTree();
             }
             else if (test == nameof(WpfRenderingVisualTree))
             {
-                this.visualTree = new WpfRenderingVisualTree();
+                visualTree = new WpfRenderingVisualTree();
             }
 
-            this.abcNumericAxis = new AbcNumericAxisControl();
-            this.abcNumericAxis.VisualTree = this.visualTree;
-            this.abcNumericAxis.UserMin = 0;
-            this.abcNumericAxis.UserMax = 100;
-            this.abcNumericAxis.UserStep = 25;
+            this.controlCoordinator = new WpfControlCoordinator<AbcNumericAxisControl>(this, new AbcNumericAxisControl(), visualTree);
+            this.controlCoordinator.abcControl.UserMin = this.Minimum;
+            this.controlCoordinator.abcControl.UserMax = this.Maximum;
+            this.controlCoordinator.abcControl.UserStep = this.Step;
         }
 
-        private Canvas NumericAxisCanvas
+        public double Minimum
         {
-            get
-            {
-                return this.numericAxisCanvas;
-            }
-            set
-            {
-                if (this.numericAxisCanvas != value)
-                {
-                    if (this.numericAxisCanvas != null)
-                    {
-                        WpfVisual wpfVisual = (WpfVisual)this.abcNumericAxis.Root;
-                        this.numericAxisCanvas.Children.Remove(wpfVisual.uiElement);
-                    }
+            get { return (double)GetValue(MinimumProperty); }
+            set { SetValue(MinimumProperty, value); }
+        }
 
-                    this.numericAxisCanvas = value;
+        public double Maximum
+        {
+            get { return (double)GetValue(MaximumProperty); }
+            set { SetValue(MaximumProperty, value); }
+        }
 
-                    if (this.numericAxisCanvas != null)
-                    {
-                        WpfVisual wpfVisual = (WpfVisual)this.abcNumericAxis.Root;
-                        this.numericAxisCanvas.Children.Add(wpfVisual.uiElement);
-                    }
-                }
-            }
+        public double Step
+        {
+            get { return (double)GetValue(StepProperty); }
+            set { SetValue(StepProperty, value); }
         }
 
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
-            if (this.visualTree is WpfVisualTree)
+            if (this.controlCoordinator.visualTree is WpfVisualTree)
             {
-                this.NumericAxisCanvas = (Canvas)this.GetTemplateChild("PART_Canvas");
+                this.controlCoordinator.NativeControlRoot = (Canvas)this.GetTemplateChild("PART_Canvas");
             }
         }
 
@@ -81,8 +79,8 @@ namespace WpfControls.DataVisualization
             base.MeasureOverride(constraint);
 
             AbcMeasureContext context = new AbcMeasureContext(new AbcSize(constraint.Width, constraint.Height));
-            this.abcNumericAxis.Measure(context);
-            return new Size(this.abcNumericAxis.DesiredMeasure.width, this.abcNumericAxis.DesiredMeasure.height);
+            this.controlCoordinator.abcControl.Measure(context);
+            return new Size(this.controlCoordinator.abcControl.DesiredMeasure.width, this.controlCoordinator.abcControl.DesiredMeasure.height);
         }
 
         protected override Size ArrangeOverride(Size arrangeBounds)
@@ -90,7 +88,7 @@ namespace WpfControls.DataVisualization
             Size arrangedSize = base.ArrangeOverride(arrangeBounds);
 
             AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, arrangeBounds.Width, arrangeBounds.Height));
-            this.abcNumericAxis.Arrange(context);
+            this.controlCoordinator.abcControl.Arrange(context);
 
             return arrangedSize;
         }
@@ -101,17 +99,29 @@ namespace WpfControls.DataVisualization
 
             if (e.Property == FontSizeProperty)
             {
-                if (this.visualTree is WpfVisualTree)
+                if (this.controlCoordinator.visualTree is WpfVisualTree)
                 {
                     //// font size will automatically propagate to textblock elements, so no need to 
                     //// set the abcNumericAxis.FontSize property
                     //// but we need to notify the axis that the measure is no longer valid
-                    this.abcNumericAxis.InvalidateMeasure();
+                    this.controlCoordinator.abcControl.InvalidateMeasure();
                 }
                 else
                 {
-                    this.abcNumericAxis.FontSize = this.FontSize;
+                    this.controlCoordinator.abcControl.FontSize = this.FontSize;
                 }
+            }
+            else if (e.Property == MinimumProperty)
+            {
+                this.controlCoordinator.abcControl.UserMin = this.Minimum;
+            }
+            else if (e.Property == MaximumProperty)
+            {
+                this.controlCoordinator.abcControl.UserMax = this.Maximum;
+            }
+            else if (e.Property == StepProperty)
+            {
+                this.controlCoordinator.abcControl.UserStep = this.Step;
             }
         }
 
@@ -119,11 +129,11 @@ namespace WpfControls.DataVisualization
         {
             base.OnRender(drawingContext);
 
-            if (this.visualTree is WpfRenderingVisualTree)
+            if (this.controlCoordinator.visualTree is WpfRenderingVisualTree)
             {
                 AbcArrangeContext context = new AbcArrangeContext(new AbcRect(0, 0, this.ActualWidth, this.ActualHeight));
                 context.Bag.SetBagObject(WpfRenderingVisualTree.DrawingContextIdentifier, drawingContext);
-                this.abcNumericAxis.Paint(context);
+                this.controlCoordinator.abcControl.Paint(context);
             }
         }
     }

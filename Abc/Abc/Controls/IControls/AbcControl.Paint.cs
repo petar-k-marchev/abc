@@ -22,6 +22,7 @@ namespace Abc.Controls
             if (this.isPaintValid)
             {
                 this.isPaintValid = false;
+                this.InvalidationRequest(InvalidationRequestFlag.Paint);
             }
         }
     }

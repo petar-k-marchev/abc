@@ -5,6 +5,8 @@ namespace Abc.Controls
 {
     internal abstract partial class AbcControl : IAbcControl
     {
+        private event EventHandler<InvalidationRequestEventArgs> invalidationRequest;
+
         private AbcVisualTree visualTree;
         private IAbcVisual root;
 

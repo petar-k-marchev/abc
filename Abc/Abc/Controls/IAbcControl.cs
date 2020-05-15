@@ -1,13 +1,16 @@
 ﻿using Abc.Visuals;
+using System;
 
 namespace Abc.Controls
 {
     internal interface IAbcControl
     {
+        event EventHandler<InvalidationRequestEventArgs> InvalidationRequest;
+
         AbcVisualTree VisualTree { get; set; }
         IAbcVisual Root { get; }
 
-        void OnRootMeasureInvalidated();
+        void RaiseInvalidationRequest(InvalidationRequestFlag flag);
     }
 
     internal static class AbcControlContextualProperties

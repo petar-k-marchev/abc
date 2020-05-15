@@ -21,6 +21,7 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
         private bool isArrangeValid;
         private bool isPaintPhase;
         private bool isPaintValid;
+        private bool isVisible = true;
 
         event EventHandler<AbcContextualPropertyValueChangedEventArgs> IAbcVisual.ContextualPropertyValueChanged
         {
@@ -95,6 +96,22 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
             }
         }
 
+        bool IAbcVisual.IsVisible
+        {
+            get
+            {
+                return this.isVisible;
+            }
+            set
+            {
+                if (this.isVisible != value)
+                {
+                    this.isVisible = value;
+                    this.InvalidateMeasure();
+                }
+            }
+        }
+
         AbcContextualPropertyValue IAbcVisual.GetContextualPropertyValue(AbcContextualPropertyKey propertyKey)
         {
             AbcContextualPropertyValue propertyValue = null;
@@ -126,6 +143,11 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         void IAbcVisual.Measure(AbcMeasureContext context)
         {
+            if (!this.isVisible)
+            {
+                return;
+            }
+
             this.isMeasurePhase = true;
             this.desiredMeasure = this.MeasureOverride(context);
             this.isMeasurePhase = false;
@@ -134,6 +156,11 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         void IAbcVisual.Arrange(AbcArrangeContext context)
         {
+            if (!this.isVisible)
+            {
+                return;
+            }
+
             if (!this.isMeasureValid)
             {
                 IAbcVisual abcVisual = this;
@@ -150,14 +177,34 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         void IAbcVisual.Paint(AbcContextBase context)
         {
+            if (!this.isVisible)
+            {
+                return;
+            }
+
             this.isPaintPhase = true;
             this.PaintOverride(context);
             this.isPaintPhase = false;
         }
 
-        void IAbcVisual.OnChildMeasureInvalidated(IAbcVisual child)
+        void IAbcVisual.InvalidationRequestFromChild(InvalidationRequestFlag flag, IAbcVisual child)
         {
-            this.InvalidateMeasure();
+            switch (flag)
+            {
+                case InvalidationRequestFlag.None:
+                    break;
+                case InvalidationRequestFlag.Measure:
+                    this.InvalidateMeasure();
+                    break;
+                case InvalidationRequestFlag.Arrange:
+                    this.InvalidateArrange();
+                    break;
+                case InvalidationRequestFlag.Paint:
+                    this.InvalidatePaint();
+                    break;
+                default:
+                    break;
+            }
         }
 
         internal virtual AbcSize MeasureOverride(AbcMeasureContext context)
@@ -176,31 +223,26 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         internal virtual void InvalidateMeasureOverride()
         {
-            if (this.visualParent != null)
-            {
-                this.visualParent.OnChildMeasureInvalidated(this);
-            }
-            else
-            {
-                IAbcVisual abcVisual = this;
-                AbcContextualPropertyValue controlPropertyValue = abcVisual.GetContextualPropertyValue(AbcControlContextualProperties.ControlPropertyKey);
-                IAbcControl control = (IAbcControl)(controlPropertyValue != null ? ((AbcContextualPropertyValue.AbcObject)controlPropertyValue).value : null);
-                control?.OnRootMeasureInvalidated();
-            }
+            this.PropagateUpInvalidationRequest(InvalidationRequestFlag.Measure);
         }
 
         internal virtual void InvalidateArrangeOverride()
         {
-            // notify parent arrange is invalid
+            this.PropagateUpInvalidationRequest(InvalidationRequestFlag.Arrange);
         }
 
         internal virtual void InvalidatePaintOverride()
         {
-            // notify parent paint is invalid
+            this.PropagateUpInvalidationRequest(InvalidationRequestFlag.Paint);
         }
 
         internal void InvalidateMeasure()
         {
+            if (this.isMeasurePhase || this.isArrangePhase)
+            {
+                return;
+            }
+
             if (this.isMeasureValid)
             {
                 this.isMeasureValid = false;
@@ -211,6 +253,11 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
 
         internal void InvalidateArrange()
         {
+            if (this.isMeasurePhase || this.isArrangePhase)
+            {
+                return;
+            }
+
             if (this.isArrangeValid)
             {
                 this.isArrangeValid = false;
@@ -225,6 +272,21 @@ namespace WpfControls.WpfRenderingVisualTreeInternals
             {
                 this.isPaintValid = false;
                 this.InvalidatePaintOverride();
+            }
+        }
+
+        private void PropagateUpInvalidationRequest(InvalidationRequestFlag flag)
+        {
+            if (this.visualParent != null)
+            {
+                this.visualParent.InvalidationRequestFromChild(flag, this);
+            }
+            else
+            {
+                IAbcVisual abcVisual = this;
+                AbcContextualPropertyValue controlPropertyValue = abcVisual.GetContextualPropertyValue(AbcControlContextualProperties.ControlPropertyKey);
+                IAbcControl control = (IAbcControl)(controlPropertyValue != null ? ((AbcContextualPropertyValue.AbcObject)controlPropertyValue).value : null);
+                control?.RaiseInvalidationRequest(flag);
             }
         }
 

@@ -11,5 +11,10 @@
         {
             return 0 < value && value < double.MaxValue;
         }
+
+        internal static bool IsValidNonNegativeDouble(double value)
+        {
+            return 0 <= value && value < double.MaxValue;
+        }
     }
 }

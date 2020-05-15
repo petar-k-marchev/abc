@@ -43,6 +43,7 @@ namespace Abc.Controls
             if (this.isArrangeValid)
             {
                 this.isArrangeValid = false;
+                this.InvalidationRequest(InvalidationRequestFlag.Arrange);
                 this.InvalidatePaint();
             }
         }

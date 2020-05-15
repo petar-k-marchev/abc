@@ -1,5 +1,4 @@
-﻿using Abc.Controls;
-using System;
+﻿using System;
 
 namespace Abc.Visuals
 {
@@ -11,12 +10,13 @@ namespace Abc.Visuals
         IAbcVisual VisualParent { get; set; }
         AbcSize DesiredMeasure { get; }
         AbcRect ArrangeSlot { get; }
+        bool IsVisible { get; set; }
 
         void Measure(AbcMeasureContext context);
         void Arrange(AbcArrangeContext context);
         void Paint(AbcContextBase context);
         AbcContextualPropertyValue GetContextualPropertyValue(AbcContextualPropertyKey propertyKey);
         void SetContextualPropertyValue(AbcContextualPropertyKey propertyKey, AbcContextualPropertyValue propertyValue);
-        void OnChildMeasureInvalidated(IAbcVisual child);
+        void InvalidationRequestFromChild(InvalidationRequestFlag flag, IAbcVisual child);
     }
 }

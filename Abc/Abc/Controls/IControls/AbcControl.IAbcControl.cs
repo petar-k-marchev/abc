@@ -1,9 +1,16 @@
 ﻿using Abc.Visuals;
+using System;
 
 namespace Abc.Controls
 {
     internal abstract partial class AbcControl
     {
+        event EventHandler<InvalidationRequestEventArgs> IAbcControl.InvalidationRequest
+        {
+            add { this.invalidationRequest += value ; }
+            remove { this.invalidationRequest -= value ; }
+        }
+
         AbcVisualTree IAbcControl.VisualTree
         {
             get
@@ -24,9 +31,24 @@ namespace Abc.Controls
             }
         }
 
-        void IAbcControl.OnRootMeasureInvalidated()
+        void IAbcControl.RaiseInvalidationRequest(InvalidationRequestFlag flag)
         {
-            this.InvalidateMeasure();
+            switch (flag)
+            {
+                case InvalidationRequestFlag.None:
+                    break;
+                case InvalidationRequestFlag.Measure:
+                    this.InvalidateMeasure();
+                    break;
+                case InvalidationRequestFlag.Arrange:
+                    this.InvalidateArrange();
+                    break;
+                case InvalidationRequestFlag.Paint:
+                    this.InvalidatePaint();
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }

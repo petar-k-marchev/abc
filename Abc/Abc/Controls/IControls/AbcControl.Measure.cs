@@ -1,4 +1,5 @@
 ﻿using Abc.Visuals;
+using System;
 
 namespace Abc.Controls
 {
@@ -36,8 +37,14 @@ namespace Abc.Controls
             if (this.isMeasureValid)
             {
                 this.isMeasureValid = false;
+                this.InvalidationRequest(InvalidationRequestFlag.Measure);
                 this.InvalidateArrange();
             }
+        }
+
+        private void InvalidationRequest(InvalidationRequestFlag flag)
+        {
+            this.invalidationRequest?.Invoke(this, new InvalidationRequestEventArgs(flag));
         }
     }
 }
