@@ -238,7 +238,7 @@ namespace AbcDataVisualization
 
         private void ArrangeTicks(double axisLineX, double axisLineRight, double y)
         {
-            double axisLineLength =axisLineRight - axisLineX;
+            double axisLineLength = axisLineRight - axisLineX;
             double halfTickThickness = this.axisTickThickness / 2;
             int count = this.tickInfos.Count;
 
@@ -292,13 +292,16 @@ namespace AbcDataVisualization
         private AbcSize MeasureLabels(AbcMeasureContext context)
         {
             int count = this.labelInfos.Count;
-
+            //double desiredWidth = 0;
+            //double desiredHeight = 0;
             for (int i = 0; i < count; i++)
             {
                 AxisLabelInfo labelInfo = this.labelInfos[i];
                 IAbcLabel labelVisual = this.labelsPool.GetOrCreate(i);
                 labelVisual.Text = labelInfo.labelContent;
                 labelVisual.Measure(context);
+                //desiredWidth += labelVisual.DesiredMeasure.width;
+                //desiredHeight = Math.Max(0, labelVisual.DesiredMeasure.height);
             }
 
             this.labelsPool.HideAfter(count);

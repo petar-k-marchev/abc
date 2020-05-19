@@ -3,3 +3,4 @@
 [assembly: InternalsVisibleTo("AbcDataVisualization")]
 
 [assembly: InternalsVisibleTo("WpfControls")]
+[assembly: InternalsVisibleTo("AndroidControls")]
