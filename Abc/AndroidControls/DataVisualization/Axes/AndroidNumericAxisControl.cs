@@ -81,14 +81,18 @@ namespace AndroidControls.DataVisualization.Axes
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
         {
-            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+            MeasureSpecMode widthMode = MeasureSpec.GetMode(widthMeasureSpec);
+            MeasureSpecMode heightMode = MeasureSpec.GetMode(heightMeasureSpec);
+            double availableWidth = widthMode == MeasureSpecMode.Unspecified ? double.PositiveInfinity : MeasureSpec.GetSize(widthMeasureSpec);
+            double availableHeight = heightMode == MeasureSpecMode.Unspecified ? double.PositiveInfinity : MeasureSpec.GetSize(heightMeasureSpec);
 
-            int width = MeasureSpec.GetSize(widthMeasureSpec);
-            int height = MeasureSpec.GetSize(heightMeasureSpec);
-            AbcMeasureContext context = new AbcMeasureContext(new AbcSize(width, height));
+            AbcMeasureContext context = new AbcMeasureContext(new AbcSize(availableWidth, availableHeight));
             this.controlCoordinator.abcControl.Measure(context);
 
-            this.SetMeasuredDimension((int)this.controlCoordinator.abcControl.DesiredMeasure.width, (int)this.controlCoordinator.abcControl.DesiredMeasure.height);
+            AbcSize desiredMeasure = this.controlCoordinator.abcControl.DesiredMeasure;
+            int measuredWidth = widthMode == MeasureSpecMode.Exactly ? (int)availableWidth : AbcMath.Round(desiredMeasure.width);
+            int measuredHeight = heightMode == MeasureSpecMode.Exactly ? (int)availableHeight : AbcMath.Round(desiredMeasure.height);
+            this.SetMeasuredDimension(measuredWidth, measuredHeight);
         }
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
