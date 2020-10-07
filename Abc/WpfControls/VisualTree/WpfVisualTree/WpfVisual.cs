@@ -298,6 +298,9 @@ namespace WpfControls.WpfVisualTreeInternals
 
         protected virtual void OnVisualParentChanged(IAbcVisual oldVisualParent)
         {
+            //// TODO: Consider changing this behavior - right now an element adds itself to a parent, but perhaps
+            //// an element should only add its children. In essence this code could be moved inside the visuals container.
+
             this.RemoveFromParent(oldVisualParent);
             this.AddToParent();
         }
